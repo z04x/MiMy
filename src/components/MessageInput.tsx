@@ -1,6 +1,4 @@
-// src/components/MessageInput.tsx
-
-import React, { FormEvent } from 'react';
+import React, { FormEvent, memo } from 'react';
 import { TextField, IconButton, InputAdornment } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 
@@ -10,7 +8,7 @@ interface MessageInputProps {
   handleSubmit: (e: FormEvent) => void;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({ prompt, setPrompt, handleSubmit }) => {
+const MessageInput: React.FC<MessageInputProps> = memo(({ prompt, setPrompt, handleSubmit }) => {
   return (
     <form onSubmit={handleSubmit}>
       <TextField
@@ -73,6 +71,6 @@ const MessageInput: React.FC<MessageInputProps> = ({ prompt, setPrompt, handleSu
       />
     </form>
   );
-};
+});
 
 export default MessageInput;

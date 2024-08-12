@@ -25,7 +25,6 @@ const Chat: React.FC = () => {
     const fetchUserData = async () => {
       try {
         const savedUser = localStorage.getItem('user');
-
         if (savedUser) {
           const parsedUser = JSON.parse(savedUser);
           setUser(parsedUser);
@@ -50,7 +49,7 @@ const Chat: React.FC = () => {
         const dialogId = selectedChatId || parseInt(chatId, 10);
         try {
           const response = await getMessagesFromDialog(dialogId);
-          setMessages(response);
+          setMessages(response.reverse());
         } catch (error) {
           console.error('Error fetching messages:', error);
         }
@@ -98,7 +97,7 @@ const Chat: React.FC = () => {
     }
   };
   
-  const handleSubmit = async (e: FormEvent) => {
+const handleSubmit = async (e: FormEvent) => {
   e.preventDefault();
 
   if (!prompt.trim()) return;
@@ -122,15 +121,18 @@ const Chat: React.FC = () => {
       if (dialogId !== null) {
         await addMessageToDialog(dialogId, prompt);
 
-        // Получаем только последние сообщения с сервера
-        const newMessages = await getMessagesFromDialog(dialogId);
+        // Получаем только последний ответ от сервера
+        const response = await getMessagesFromDialog(dialogId);
+        const serverMessage = response.find(msg => !msg.isUser);
 
-        // Убираем сообщение-загрузку и добавляем только новые сообщения от сервера
+        // Убираем сообщение-загрузку и добавляем только последний ответ от сервера
         setMessages(prevMessages => {
           const updatedMessages = [...prevMessages];
           updatedMessages.pop(); // Удаляем последнее сообщение (сообщение загрузки)
-          const serverMessages = newMessages.filter(msg => !msg.isUser); // Отфильтровываем только сообщения сервера
-          return [...updatedMessages, ...serverMessages];
+          if (serverMessage) {
+            return [...updatedMessages, serverMessage];
+          }
+          return updatedMessages;
         });
       }
     } catch (error) {
@@ -150,6 +152,7 @@ const Chat: React.FC = () => {
     });
   }
 };
+
 
 
   useEffect(() => {

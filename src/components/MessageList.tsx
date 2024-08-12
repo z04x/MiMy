@@ -3,7 +3,7 @@ import { Box, Typography, CircularProgress } from '@mui/material';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
-
+import { useRef } from 'react';
 import { Message } from '../interfaces/Message';
 
 interface MessageListProps {
@@ -12,13 +12,42 @@ interface MessageListProps {
 }
 
 const MessageList: React.FC<MessageListProps> = ({ messages, endOfMessagesRef }) => {
+  const messageContainerRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    // Scroll to bottom when messages change
+    const scrollToBottom = () => {
+      endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // MutationObserver to detect when new messages are rendered
+    const observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          scrollToBottom();
+        }
+      }
+    });
+
+    const container = messageContainerRef.current;
+    if (container) {
+      observer.observe(container, { childList: true, subtree: true });
+    }
+
+    // Cleanup
+    return () => {
+      if (container) {
+        observer.disconnect();
+      }
+    };
+  }, [messages, endOfMessagesRef]);
 
   return (
     <Box
+          ref={messageContainerRef}
+
       sx={{
+
         mb: 4,
         height: '70vh',
         overflowY: 'auto',
