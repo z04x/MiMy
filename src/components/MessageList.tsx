@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { useRef } from "react";
 import { Message } from "../interfaces/Message";
@@ -16,36 +16,16 @@ const MessageList: React.FC<MessageListProps> = ({
   setLoading, // Принимаем setLoading как пропс
 }) => {
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
-
   useEffect(() => {
-    console.log("Messages changed");
-    // Scroll to bottom when messages change
-    const scrollToBottom = () => {
-      endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
-    // MutationObserver to detect when new messages are rendered
-    const observer = new MutationObserver((mutationsList) => {
-      for (const mutation of mutationsList) {
-        if (mutation.type === "childList") {
-          scrollToBottom();
-        }
-      }
-    });
-
+    // Прокрутка в самый низ при первом рендере и обновлении сообщений
     const container = messageContainerRef.current;
     if (container) {
-      observer.observe(container, { childList: true, subtree: true });
-    }
-
-    // Cleanup
-    return () => {
-      if (container) {
-        observer.disconnect();
-      }
-    };
-  }, [messages, endOfMessagesRef]);
-
+      setTimeout(() => {
+        container.scrollTop = container.scrollHeight;
+      }, 50); // Сделал через setTimeout, хз как по другому.. Так как без него не листаеться в саммый конец, за за того что не все сообщения успевают прогрузиться.
+    } // можно конечно добавить слушатель на загрузку сообщений и когда все сообщения загрузились, скролить
+  }, [messages]);
+  
   return (
     <Box
       ref={messageContainerRef}
