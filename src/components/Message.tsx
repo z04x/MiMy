@@ -1,11 +1,10 @@
-import React, {memo, useEffect, useState } from "react";
-import { Box, CircularProgress } from "@mui/material";
+import React, { memo, useEffect, useState } from "react";
+import { Box, CircularProgress, IconButton, Typography } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-
-import { Message } from "../interfaces/Message";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-// import exp from "constants";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { Message } from "../interfaces/Message";
 
 interface MessageProps {
   message: Message;
@@ -13,11 +12,11 @@ interface MessageProps {
   setLoading: (isLoading: boolean) => void; // добавляем функцию для управления состоянием загрузки
 }
 
-const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoading}) => {
+const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoading }) => {
   const [body, setBody] = useState("");
+  const [copyStatus, setCopyStatus] = useState("Copy"); // состояние для текста кнопки
 
   useEffect(() => {
-    console.log("UseEffect", message);
     if (message.text) {
       setBody(message.text);
       setLoading(false) // endLoading
@@ -39,6 +38,13 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
     }
   }, [message, setLoading]);
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(body).then(() => {
+      setCopyStatus("Copied!"); // Обновляем текст кнопки на "Copied"
+      setTimeout(() => setCopyStatus("Copy"), 2000); // Возвращаем "Copy" через 2 секунды
+    });
+  };
+
   return (
     <Box
       key={index}
@@ -48,6 +54,7 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
         width: "100%",
         justifyContent: "center",
         flexDirection: "column",
+        alignItems: message.isUser ? "end" : "start",
       }}
     >
       <Box
@@ -62,6 +69,8 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
           boxShadow: 0,
           minHeight: "20px",
           display: "flex",
+          
+          width: message.isUser ? "70%" : "100%",
           alignItems: message.isUser ? "end" : "start",
           flexDirection: "column",
           wordBreak: "break-word",
@@ -71,35 +80,56 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
         {message.isLoading ? (
           <CircularProgress size={20} />
         ) : (
-          <ReactMarkdown
-            components={{
-              pre: ({ node, ...props }) => (
-                <pre
-                  style={{
-                    backgroundColor: "#00000",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    overflowX: "auto",
-                    whiteSpace: "pre-wrap",
-                    margin: 0,
-                  }}
-                  {...props}
-                />
-              ),
-              code: ({ node, className, children, ...props }) => {
-                const match = /language-(\w+)/.exec(className || "");
-                return match ? (
-                  <SyntaxHighlighter language={match[1]} style={vscDarkPlus}>
-                    {String(children).replace(/\n$/, "")}
-                  </SyntaxHighlighter>
-                ) : (
-                  <code {...props}>{children}</code>
-                );
-              },
-            }}
-          >
-            {body}
-          </ReactMarkdown>
+          <>
+            <ReactMarkdown
+              components={{
+                pre: ({ node, ...props }) => (
+                  <pre
+                    style={{
+                      backgroundColor: "#00000",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      overflowX: "auto",
+                      whiteSpace: "pre-wrap",
+                      margin: 0,
+                    }}
+                    {...props}
+                  />
+                ),
+                code: ({ node, className, children, ...props }) => {
+                  const match = /language-(\w+)/.exec(className || "");
+                  return match ? (
+                    <SyntaxHighlighter language={match[1]} style={vscDarkPlus}>
+                      {String(children).replace(/\n$/, "")}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code {...props}>{children}</code>
+                  );
+                },
+              }}
+            >
+              {body}
+            </ReactMarkdown>
+            {/* Кнопка для копирования с текстом */}
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              p:'5px 10px',
+              borderRadius:'16px',
+              bgcolor: message.isUser ? "background.default" : "background.paper"
+              }}>
+              <IconButton onClick={handleCopy} sx={{ color: '#fff', p:0}}>
+                <ContentCopyIcon />
+              </IconButton>
+              <Typography
+                variant="body2"
+                sx={{ color: "#fff", cursor: 'pointer'}}
+                onClick={handleCopy}
+              >
+                {copyStatus}
+              </Typography>
+            </Box>
+          </>
         )}
       </Box>
     </Box>

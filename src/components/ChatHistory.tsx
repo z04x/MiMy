@@ -34,7 +34,7 @@ const ChatHistory: React.FC = () => {
     try {
       const response = await axios.post(`${BASE_URL}/dialogs`, {
         user_id: 123, // Здесь можно использовать настоящий user_id позже
-        model: 'gpt-4o', // Укажите нужную модель
+        model: 'gpt-4o-mini', // Укажите нужную модель
       });
 
       const newChat = response.data;

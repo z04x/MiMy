@@ -7,7 +7,6 @@ import Header from "./Header";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 // import ChatList from './ChatList';
-
 import { Message } from "../interfaces/Message";
 import { User } from "../interfaces/User";
 
@@ -78,7 +77,7 @@ const Chat: React.FC = () => {
       const response = await axios.post(
         `${BASE_URL}/dialogs/${dialogId}/messages/`,
         {
-          prompt: prompt,
+          prompt: prompt, //? Эта функция по идеи тут не нужна, или?
         },
         {
           responseType: "stream",

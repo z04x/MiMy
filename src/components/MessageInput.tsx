@@ -1,5 +1,5 @@
 import React, { FormEvent, memo } from 'react';
-import { TextField, IconButton, InputAdornment } from '@mui/material';
+import { TextField, IconButton, InputAdornment} from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 
 interface MessageInputProps {
@@ -18,6 +18,7 @@ const MessageInput: React.FC<MessageInputProps> = memo(({ prompt, setPrompt, han
     await handleSubmit(e);
   }
   return (
+    
     <form onSubmit={onSubmit}>
       <TextField
         label="Send your message"
@@ -52,6 +53,7 @@ const MessageInput: React.FC<MessageInputProps> = memo(({ prompt, setPrompt, han
             },
             '& input': {
               color: '#fff',
+              
             },
             '& .MuiInputBase-input::placeholder': {
               color: '#9e9e9e',
@@ -60,6 +62,20 @@ const MessageInput: React.FC<MessageInputProps> = memo(({ prompt, setPrompt, han
           '& textarea': {
             overflowY:'auto',
             color:'#fff',
+            '&::-webkit-scrollbar': {
+          width: '4px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: "#363D40", // Цвет полосы прокрутки
+          borderRadius: '4px', // Скругление углов
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: "#535E61", // Цвет при наведении
+        },
+        '&::-webkit-scrollbar-track': {
+          backgroundColor: "#262120", // Цвет трека скроллбара
+          borderRadius: '4px',
+        },
             '&:focus': {
             },
           },

@@ -53,11 +53,23 @@ const MessageList: React.FC<MessageListProps> = ({
         mb: 4,
         height: "70vh",
         overflowY: "auto",
-        borderRadius: "10px",
-        p: 0,
+        borderRadius: "0px",
+        p: 1,
         backgroundColor: "background.default",
-        display: "flex",
-        flexDirection: "column",
+        '&::-webkit-scrollbar': {
+          width: '4px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: "#363D40", // Цвет полосы прокрутки
+          borderRadius: '4px', // Скругление углов
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: "#535E61", // Цвет при наведении
+        },
+        '&::-webkit-scrollbar-track': {
+          backgroundColor: "#262120", // Цвет трека скроллбара
+          borderRadius: '4px',
+        },
       }}
     >
       {messages?.length > 0 ? (

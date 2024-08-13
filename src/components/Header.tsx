@@ -12,15 +12,15 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ chatId }) => {
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <IconButton component={Link} to="/chat-history" edge="start" color="inherit" aria-label="menu">
+    <AppBar position="static"  sx={{bgcolor:'background.default', boxShadow: 'none'}}>
+      <Toolbar >
+        <IconButton component={Link} to="/chat-history" color="inherit" aria-label="menu">
           <ArrowBackIcon />
-        </IconButton>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Chat Model {chatId}
+        </IconButton >
+        <Typography  variant="h6" component="div" sx={{display:"flex", flexGrow: 1, justifyContent:"center", alignItems:"center"}}>
+          Chat {chatId}
         </Typography>
-        <IconButton edge="end" color="inherit" aria-label="options">
+        <IconButton color="inherit" aria-label="options">
           <MoreVertIcon />
         </IconButton>
       </Toolbar>
