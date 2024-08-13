@@ -17,6 +17,7 @@ const Chat: React.FC = () => {
   const { chatId = "" } = useParams<{ chatId: string }>();
   const [prompt, setPrompt] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
@@ -209,11 +210,16 @@ const Chat: React.FC = () => {
       {/* <ChatList onSelectChat={setSelectedChatId} /> */}
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <Header chatId={chatId} />
-        <MessageList messages={messages} endOfMessagesRef={endOfMessagesRef} />
+        <MessageList 
+          setLoading={setIsLoading} 
+          messages={messages} 
+          endOfMessagesRef={endOfMessagesRef} 
+          />
         <MessageInput
           prompt={prompt}
           setPrompt={setPrompt}
           handleSubmit={handleSubmit}
+          isLoading={isLoading} 
         />
       </Box>
     </Box>

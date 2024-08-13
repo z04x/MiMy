@@ -1,30 +1,30 @@
-import React, { FormEvent, memo, useEffect, useState } from "react";
-import { TextField, IconButton, InputAdornment } from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
-
+import React, {memo, useEffect, useState } from "react";
 import { Box, CircularProgress } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 
 import { Message } from "../interfaces/Message";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import exp from "constants";
+// import exp from "constants";
 
 interface MessageProps {
   message: Message;
   index: number;
+  setLoading: (isLoading: boolean) => void; // добавляем функцию для управления состоянием загрузки
 }
 
-const MessageComponent: React.FC<MessageProps> = memo(({ message, index }) => {
+const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoading}) => {
   const [body, setBody] = useState("");
 
   useEffect(() => {
     console.log("UseEffect", message);
     if (message.text) {
       setBody(message.text);
+      setLoading(false) // endLoading
     } else {
       if (message.readPromptResponse) {
         let result = "";
+        setLoading(true);
         message.readPromptResponse.then(async (reader) => {
           while (true) {
             const { value, done } = await reader.read();
@@ -32,11 +32,12 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index }) => {
             result += value;
             setBody(result);
           }
+          setLoading(false); // Завершаем загрузку после получения данных
         });
         message.isLoading = false;
       }
     }
-  }, []);
+  }, [message, setLoading]);
 
   return (
     <Box

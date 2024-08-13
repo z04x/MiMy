@@ -5,16 +5,24 @@ import SendIcon from '@mui/icons-material/Send';
 interface MessageInputProps {
   prompt: string;
   setPrompt: React.Dispatch<React.SetStateAction<string>>;
-  handleSubmit: (e: FormEvent) => void;
+  handleSubmit: (e: FormEvent) => Promise<void>;
+  isLoading: boolean; // добавляем флаг загрузки
 }
 
-const MessageInput: React.FC<MessageInputProps> = memo(({ prompt, setPrompt, handleSubmit }) => {
+const MessageInput: React.FC<MessageInputProps> = memo(({ prompt, setPrompt, handleSubmit, isLoading }) => {
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!prompt.trim() || isLoading) return;
+
+    await handleSubmit(e);
+  }
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={onSubmit}>
       <TextField
         label="Send your message"
         multiline
-        rows={1}
+        maxRows={4}
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
         variant="outlined"
@@ -23,6 +31,12 @@ const MessageInput: React.FC<MessageInputProps> = memo(({ prompt, setPrompt, han
           width: '100%',
           backgroundColor: 'background.paper',
           borderRadius: '16px',
+          '& .MuiInputLabel-root': {
+            color: '#9e9e9e', // Цвет метки по умолчанию
+          },
+          '& .Mui-focused .MuiInputLabel-root': {
+            color: '#9e9e9e', // Цвет метки в фокусе
+          },
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
               borderColor: '#676767',
@@ -44,13 +58,9 @@ const MessageInput: React.FC<MessageInputProps> = memo(({ prompt, setPrompt, han
             },
           },
           '& textarea': {
-            overflow: 'hidden',
-            minHeight: '20px',
-            transition: 'all 0.3s ease',
+            overflowY:'auto',
+            color:'#fff',
             '&:focus': {
-              minHeight: '120px',
-              transform: 'scaleY(1.1)',
-              transformOrigin: 'top',
             },
           },
         }}
@@ -62,7 +72,21 @@ const MessageInput: React.FC<MessageInputProps> = memo(({ prompt, setPrompt, han
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton type="submit" aria-label="send">
+              <IconButton 
+                type="submit" 
+                aria-label="send"
+                disabled={isLoading}
+                sx={{
+                  bgcolor:"#fff", 
+                  p:"6px",
+                  display:"flex",
+                  alignItems:"center",
+                  transition:"all 0.2s ease",
+                  "&:hover": {
+                    bgcolor:"#aaa", 
+                  },
+                }}
+              >
                 <SendIcon />
               </IconButton>
             </InputAdornment>

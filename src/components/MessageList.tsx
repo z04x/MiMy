@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useRef } from "react";
 import { Message } from "../interfaces/Message";
 import MessageComponent from "./Message";
@@ -7,11 +7,13 @@ import MessageComponent from "./Message";
 interface MessageListProps {
   messages: Message[];
   endOfMessagesRef: React.RefObject<HTMLDivElement>;
+  setLoading: (isLoading: boolean) => void; // Добавляем setLoading в пропсы
 }
 
 const MessageList: React.FC<MessageListProps> = ({
   messages,
   endOfMessagesRef,
+  setLoading, // Принимаем setLoading как пропс
 }) => {
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -61,7 +63,11 @@ const MessageList: React.FC<MessageListProps> = ({
       {messages?.length > 0 ? (
         messages.map((message, index) => (
           <ul key={index}>
-            <MessageComponent message={message} index={index} />
+            <MessageComponent 
+              setLoading={setLoading}
+              message={message} 
+              index={index} 
+            />
           </ul>
         ))
       ) : (
