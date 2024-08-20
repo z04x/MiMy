@@ -3,7 +3,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom'; // Импортируйте useNavigate вместо useHistory
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3333';
+const BASE_URL = 'https://chat.myownwebpage.net';
 
 interface Chat {
   dialog_id: number;

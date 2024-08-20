@@ -10,7 +10,7 @@ import MessageInput from "./MessageInput";
 import { Message } from "../interfaces/Message";
 import { User } from "../interfaces/User";
 
-const BASE_URL = "http://localhost:3333";
+const BASE_URL = "https://chat.myownwebpage.net";
 
 const Chat: React.FC = () => {
   const { chatId = "" } = useParams<{ chatId: string }>();
