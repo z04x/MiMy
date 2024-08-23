@@ -3,14 +3,14 @@ import { Box } from "@mui/material";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-import Header from "./Header";
+// import Header from "./Header";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 // import ChatList from './ChatList';
 import { Message } from "../interfaces/Message";
 import { User } from "../interfaces/User";
 
-const BASE_URL = "https://chat.myownwebpage.net";
+const BASE_URL = "http://localhost:3333";
 
 const Chat: React.FC = () => {
   const { chatId = "" } = useParams<{ chatId: string }>();
@@ -29,7 +29,7 @@ const Chat: React.FC = () => {
           const parsedUser = JSON.parse(savedUser);
           setUser(parsedUser);
         } else {
-          const res = await axios.get<User>(`${BASE_URL}/users/123`);
+          const res = await axios.get<User>(`${BASE_URL}/users/123`); // Пока что беру юзера 123
           const newUser: User = res.data;
           localStorage.setItem("user", JSON.stringify(newUser));
           setUser(newUser);
@@ -61,7 +61,7 @@ const Chat: React.FC = () => {
 
   const createNewDialog = async (userId: number, model: string) => {
     try {
-      const response = await axios.post(`${BASE_URL}/dialogs/`, {
+      const response = await axios.post(`${BASE_URL}/dialogs`, {  // убрал слеш
         user_id: userId,
         model: model,
       });
@@ -75,7 +75,7 @@ const Chat: React.FC = () => {
   const addMessageToDialog = async (dialogId: number, prompt: string) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/dialogs/${dialogId}/messages/`,
+        `${BASE_URL}/dialogs/${dialogId}/messages`, // убрал слеш
         {
           prompt: prompt, //? Эта функция по идеи тут не нужна, или?
         },
@@ -105,7 +105,7 @@ const Chat: React.FC = () => {
   const getMessagesFromDialog = async (dialogId: number) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/dialogs/${dialogId}/messages/`
+        `${BASE_URL}/dialogs/${dialogId}/messages` // убрал слеш
       );
       return response.data.map((message: any) => ({
         text: message.content,
@@ -119,7 +119,7 @@ const Chat: React.FC = () => {
   };
 
   const getStreamResponse = async (dialogId: number, prompt: string) => {
-    const response = await fetch(`${BASE_URL}/dialogs/${dialogId}/messages/`, {
+    const response = await fetch(`${BASE_URL}/dialogs/${dialogId}/messages`, { // убрал слеш
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -205,10 +205,10 @@ const Chat: React.FC = () => {
   }, [messages]);
 
   return (
-    <Box sx={{ display: "flex", height: "100vh" }}>
+    <Box sx={{ display: "flex", height: "100vh", pb:1}}>
       {/* <ChatList onSelectChat={setSelectedChatId} /> */}
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-        <Header chatId={chatId} />
+      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", width:'100%' }}>
+        {/* <Header chatId={chatId} /> */}
         <MessageList 
           setLoading={setIsLoading} 
           messages={messages} 

@@ -30,8 +30,9 @@ const MessageList: React.FC<MessageListProps> = ({
     <Box
       ref={messageContainerRef}
       sx={{
-        mb: 4,
-        height: "70vh",
+        mb: 1,
+        width:'auto',
+        height:'100vh',
         overflowY: "auto",
         borderRadius: "0px",
         p: 1,

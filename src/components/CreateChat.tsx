@@ -5,7 +5,7 @@ import { Box, Button, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const BASE_URL = 'https://chat.myownwebpage.net'; // Убедитесь, что адрес правильный
+const BASE_URL = 'http://localhost:3333'; // Убедитесь, что адрес правильный
 
 const CreateChat: React.FC = () => {
   const [userId, setUserId] = useState<number>(0); // Подставьте реальное значение userId
@@ -18,7 +18,7 @@ const CreateChat: React.FC = () => {
     setError(null);
 
     try {
-      const response = await axios.post(`${BASE_URL}/dialogs/`, {
+      const response = await axios.post(`${BASE_URL}/dialogs`, { // убрал слеш
         user_id: userId,
         model: 'gpt-4o-mini', // Или другой подходящий модель
       });

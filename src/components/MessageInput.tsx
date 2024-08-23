@@ -23,6 +23,7 @@ const MessageInput: React.FC<MessageInputProps> = memo(({ prompt, setPrompt, han
       <TextField
         label="Send your message"
         multiline
+        
         maxRows={4}
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
@@ -30,6 +31,7 @@ const MessageInput: React.FC<MessageInputProps> = memo(({ prompt, setPrompt, han
         fullWidth
         sx={{
           width: '100%',
+          height:'100%',
           backgroundColor: 'background.paper',
           borderRadius: '16px',
           '& .MuiInputLabel-root': {

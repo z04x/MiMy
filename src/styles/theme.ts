@@ -9,19 +9,19 @@ const theme = createTheme({
       main: '#dc004e',
     },
      background: {
-      default: '#141718', // 
-      paper: '#232627', // 
+      default: '#1F2322', //  основной фон всего приложения
+      paper: '#2C302F', // фон для компонентов в главном меню
     },
     colors: {
-      default: '#141718', // 
-      paper: '#232627', // 
+      default: '#333736', // фон для сообщений от чата 
+      paper: '#DADADA', // фон для сообщений от пользователя
       customBgBtn: '#FFFAFA', //
       gray: 'DDDDE4',
     },
   },
 
   typography: {
-    fontFamily: 'Roboto, Arial, sans-serif',
+    fontFamily: '"SFProText" sans-serif'
   },
 });
 

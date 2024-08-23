@@ -1,5 +1,103 @@
-body {
-  margin: 0;
-  font-family: 'Roboto', 'Arial', sans-serif;
+@font-face {
+  font-family: 'SFProText';
+  src: url('./assets/fonts/SF_Pro_Text/SFProText-Light.ttf') format('ttf');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SFProText';
+  src: url('./assets/fonts/SF_Pro_Text/SFProText-Regular.ttf') format('ttf');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SFProText';
+  src: url('./assets/fonts/SF_Pro_Text/SFProText-Medium.ttf') format('ttf');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SFProText';
+  src: url('./assets/fonts/SF_Pro_Text/SFProText-Semibold.ttf') format('ttf');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SFProText';
+  src: url('./assets/fonts/SF_Pro_Text/SFProText-Bold.ttf') format('ttf');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SFProText';
+  src: url('./assets/fonts/SF_Pro_Text/SFProText-Heavy.ttf') format('ttf');
+  font-weight: 900;
+  font-style: normal;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'SFProText', sans-serif;
+  font-weight: 400;
+}
+
+/* Prevent font size inflation */
+html {
+  -moz-text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+/* Remove default margin in favour of better control in authored CSS */
+body, h1, h2, h3, h4, p,
+figure, blockquote, dl, dd {
+  margin: 0;
+}
+
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+}
+
+/* Set core body defaults */
+body {
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* Set shorter line heights on headings and interactive elements */
+
+/* Balance text wrapping on headings */
+
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+  text-decoration-skip-ink: auto;
+  color: currentColor;
+}
+
+/* Make images easier to work with */
+img,
+picture {
+  max-width: 100%;
+  display: block;
+}
+
+/* Inherit fonts for inputs and buttons */
+input, button,
+textarea, select {
+  font: inherit;
+}
+
+/* Make sure textarea without a rows attribute are not tiny */
+
+/* Anything that has been anchored to should have extra scroll margin */
+:target {
+  scroll-margin-block: 5ex;
+}
