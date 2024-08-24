@@ -1,11 +1,9 @@
 // src/components/CreateChat.tsx
 
-import React, { useState } from 'react';
-import { Box, Button, TextField, Typography } from '@mui/material';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-
-const BASE_URL = 'http://localhost:3333'; // Убедитесь, что адрес правильный
+import React, { useState } from "react";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { createChat } from "../services/dialogService";
 
 const CreateChat: React.FC = () => {
   const [userId, setUserId] = useState<number>(0); // Подставьте реальное значение userId
@@ -18,23 +16,18 @@ const CreateChat: React.FC = () => {
     setError(null);
 
     try {
-      const response = await axios.post(`${BASE_URL}/dialogs`, { // убрал слеш
-        user_id: userId,
-        model: 'gpt-4o-mini', // Или другой подходящий модель
-      });
-
-      const dialogId = response.data.dialog_id;
-      navigate(`/chat/${dialogId}`);
+      const newDialogId = await createChat(userId, "gpt-4o-mini");
+      navigate(`/chat/${newDialogId}`);
     } catch (err) {
-      console.error('Error creating chat:', err);
-      setError('Failed to create chat');
+      console.error("Error creating chat:", err);
+      setError("Failed to create chat");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box sx={{ mt: 4, maxWidth: '600px', mx: 'auto' }}>
+    <Box sx={{ mt: 4, maxWidth: "600px", mx: "auto" }}>
       <Typography variant="h4" component="div" sx={{ mb: 4 }}>
         Create New Chat
       </Typography>
@@ -53,7 +46,7 @@ const CreateChat: React.FC = () => {
         fullWidth
         disabled={loading}
       >
-        {loading ? 'Creating...' : 'Create Chat'}
+        {loading ? "Creating..." : "Create Chat"}
       </Button>
       {error && <Typography color="error">{error}</Typography>}
     </Box>

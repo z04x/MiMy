@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 import { Box } from "@mui/material";
 import { useParams } from "react-router-dom";
-import axios from "axios";
-
 // import Header from "./Header";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 // import ChatList from './ChatList';
 import { Message } from "../interfaces/Message";
-import { User } from "../interfaces/User";
-
-const BASE_URL = "http://localhost:3333";
+import User from "../interfaces/User";
+import {
+  getMessagesFromDialog,
+  getStreamResponse,
+  createChat,
+} from "../services/dialogService";
+import { getUser } from "../services/userService";
 
 const Chat: React.FC = () => {
   const { chatId = "" } = useParams<{ chatId: string }>();
@@ -24,16 +26,8 @@ const Chat: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const savedUser = localStorage.getItem("user");
-        if (savedUser) {
-          const parsedUser = JSON.parse(savedUser);
-          setUser(parsedUser);
-        } else {
-          const res = await axios.get<User>(`${BASE_URL}/users/123`); // Пока что беру юзера 123
-          const newUser: User = res.data;
-          localStorage.setItem("user", JSON.stringify(newUser));
-          setUser(newUser);
-        }
+        const user = await getUser();
+        setUser(user);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -58,80 +52,6 @@ const Chat: React.FC = () => {
 
     loadMessages();
   }, [selectedChatId, chatId]);
-
-  const createNewDialog = async (userId: number, model: string) => {
-    try {
-      const response = await axios.post(`${BASE_URL}/dialogs`, {  // убрал слеш
-        user_id: userId,
-        model: model,
-      });
-      return response.data.dialog_id;
-    } catch (error) {
-      console.error("Error creating new dialog:", error);
-      throw error;
-    }
-  };
-
-  const addMessageToDialog = async (dialogId: number, prompt: string) => {
-    try {
-      const response = await axios.post(
-        `${BASE_URL}/dialogs/${dialogId}/messages`, // убрал слеш
-        {
-          prompt: prompt, //? Эта функция по идеи тут не нужна, или?
-        },
-        {
-          responseType: "stream",
-        }
-      );
-
-      const stream = response.data;
-      let result = "";
-      stream.on("data", (chunk: any) => {
-        console.log(chunk.toString());
-        result += chunk.toString();
-      });
-
-      stream.on("end", () => {
-        console.log("Stream ended");
-      });
-
-      return result;
-    } catch (error) {
-      console.error("Error adding message to dialog:", error);
-      throw error;
-    }
-  };
-
-  const getMessagesFromDialog = async (dialogId: number) => {
-    try {
-      const response = await axios.get(
-        `${BASE_URL}/dialogs/${dialogId}/messages` // убрал слеш
-      );
-      return response.data.map((message: any) => ({
-        text: message.content,
-        isUser: message.role === "user",
-        isLoading: false,
-      }));
-    } catch (error) {
-      console.error("Error fetching messages from dialog:", error);
-      throw error;
-    }
-  };
-
-  const getStreamResponse = async (dialogId: number, prompt: string) => {
-    const response = await fetch(`${BASE_URL}/dialogs/${dialogId}/messages`, { // убрал слеш
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: prompt,
-      }),
-    });
-    return response
-      .body!.pipeThrough(new TextDecoderStream())
-      .getReader();
-  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -158,7 +78,7 @@ const Chat: React.FC = () => {
         let dialogId = selectedChatId || (chatId ? parseInt(chatId) : null);
 
         if (!dialogId) {
-          dialogId = await createNewDialog(Number(user.id), "gpt-4o-mini");
+          dialogId = await createChat(Number(user.id), "gpt-4o-mini");
           setSelectedChatId(dialogId);
         }
 
@@ -169,7 +89,7 @@ const Chat: React.FC = () => {
             isLoading: true,
             readPromptResponse: getStreamResponse(dialogId, prompt),
           };
-          
+
           setMessages((prevMessages) => {
             const updatedMessages = [...prevMessages];
             updatedMessages.pop(); // Удаляем последнее сообщение (сообщение загрузки)
@@ -205,20 +125,27 @@ const Chat: React.FC = () => {
   }, [messages]);
 
   return (
-    <Box sx={{ display: "flex", height: "100vh", pb:1}}>
+    <Box sx={{ display: "flex", height: "100vh", pb: 1 }}>
       {/* <ChatList onSelectChat={setSelectedChatId} /> */}
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", width:'100%' }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+        }}
+      >
         {/* <Header chatId={chatId} /> */}
-        <MessageList 
-          setLoading={setIsLoading} 
-          messages={messages} 
-          endOfMessagesRef={endOfMessagesRef} 
-          />
+        <MessageList
+          setLoading={setIsLoading}
+          messages={messages}
+          endOfMessagesRef={endOfMessagesRef}
+        />
         <MessageInput
           prompt={prompt}
           setPrompt={setPrompt}
           handleSubmit={handleSubmit}
-          isLoading={isLoading} 
+          isLoading={isLoading}
         />
       </Box>
     </Box>

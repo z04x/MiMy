@@ -1,6 +1,6 @@
 // src/interfaces/User.ts
 
-export interface User {
+export default interface User {
   id: string;
   username: string;
   first_name: string;
