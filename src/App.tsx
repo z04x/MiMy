@@ -12,7 +12,18 @@ import { initTelegram } from './telegramUtils';
 
 const App: React.FC = () => {
   useEffect(() => {
-    initTelegram();
+    try {
+      const isTelegramWebApp = window.Telegram?.WebApp || window.location !== window.parent.location;
+
+      if (isTelegramWebApp) {
+        // Инициализируем Telegram API только если приложение запущено внутри Telegram
+        initTelegram();
+      } else {
+        console.warn('Приложение запущено вне Telegram. Пропуск инициализации Telegram API.');
+      }
+    } catch (error) {
+      console.error('Ошибка при инициализации Telegram:', error);
+    }
   }, []);
 
   return (
