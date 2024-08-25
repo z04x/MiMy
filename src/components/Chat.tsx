@@ -43,7 +43,9 @@ const Chat: React.FC = () => {
         const dialogId = selectedChatId || parseInt(chatId, 10);
         try {
           const response = await getMessagesFromDialog(dialogId);
+          console.log(response);
           setMessages(response.reverse());
+          setIsLoading(false);
         } catch (error) {
           console.error("Error fetching messages:", error);
         }

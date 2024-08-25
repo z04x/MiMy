@@ -6,7 +6,8 @@ export const getMessagesFromDialog = async (dialogId: number) => {
     const response = await api.get(
       `/dialogs/${dialogId}/messages` // убрал слеш
     );
-    return response.data.map((message: any) => ({
+    console.log(response.data);
+    return response.data.messages.map((message: any) => ({
       text: message.content,
       isUser: message.role === "user",
       isLoading: false,

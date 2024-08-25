@@ -16,7 +16,9 @@ const ChatHistory: React.FC = () => {
     const fetchChatHistory = async () => {
       try {
         const chats = await getChatHistory();
+        console.log(chats);
         setChatHistory(chats);
+        setLoading(false);
       } catch (error) {
         setLoading(false);
       }
