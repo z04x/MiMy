@@ -77,3 +77,31 @@ export const getChatsByUserId = async (userId: number): Promise<Chat[]> => {
     throw error;
   }
 };
+
+
+const sanitizeInput = (input: string): string => {
+  return input.replace(/<\/?[^>]+>/gi, ""); // Очистка от HTML тегов
+};
+
+const validateInput = (input: string): boolean => {
+  return input.trim().length > 0; // Проверка на пустоту
+};
+
+export const renameChat = async (dialogId: number, newTitle: string) => {
+  try {
+    const sanitizedTitle = sanitizeInput(newTitle); // Очистка заголовка
+
+    if (!validateInput(sanitizedTitle)) {
+      throw new Error("The new title cannot be empty or contain only whitespace."); // Валидация заголовка
+    }
+
+    const response = await api.patch(`/dialogs/${dialogId}`, {
+      title: sanitizedTitle,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error renaming chat:", error);
+    throw error;
+  }
+};

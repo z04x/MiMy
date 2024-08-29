@@ -6,6 +6,7 @@ declare module '@mui/material/styles' {
     paper?: string;
     customBgBtn?: string;
     gray?: string;
+    sendBg?: string;
   }
   
   interface Palette {

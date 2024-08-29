@@ -1,118 +1,66 @@
-import React, { FormEvent, memo } from 'react';
-import { TextField, IconButton, InputAdornment} from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+import React, { useState, useRef, useEffect } from "react";
+import { TextField, Paper } from "@mui/material";
 
 interface MessageInputProps {
   prompt: string;
   setPrompt: React.Dispatch<React.SetStateAction<string>>;
-  handleSubmit: (e: FormEvent) => Promise<void>;
-  isLoading: boolean; // добавляем флаг загрузки
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void; // Ensure this matches your actual type
+  isLoading: boolean;
 }
 
-const MessageInput: React.FC<MessageInputProps> = memo(({ prompt, setPrompt, handleSubmit, isLoading }) => {
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+const MessageInput: React.FC<MessageInputProps> = ({
+  prompt,
+  setPrompt,
+  handleSubmit,
+  isLoading
+}) => {
+  const [textareaHeight, setTextareaHeight] = useState<number>(40);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-    if (!prompt.trim() || isLoading) return;
+  // Adjust the height of the input field based on the content
+  useEffect(() => {
+    if (textareaRef.current) {
+      setTextareaHeight(textareaRef.current.scrollHeight);
+    }
+  }, [prompt]);
 
-    await handleSubmit(e);
-  }
   return (
-    
-    <form onSubmit={onSubmit}>
-      <TextField
-        label="Send your message"
-        multiline
-        
-        maxRows={4}
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        variant="outlined"
-        fullWidth
-        sx={{
-          width: '100%',
-          height:'100%',
-          backgroundColor: 'background.paper',
-          borderRadius: '16px',
-          '& .MuiInputLabel-root': {
-            color: '#9e9e9e', // Цвет метки по умолчанию
-          },
-          '& .Mui-focused .MuiInputLabel-root': {
-            color: '#9e9e9e', // Цвет метки в фокусе
-          },
-          '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-              borderColor: '#676767',
-              borderRadius: '16px',
-            },
-            '&:hover fieldset': {
-              borderColor: '#676767',
-              borderRadius: '16px',
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: '#676767',
-              borderRadius: '16px',
-            },
-            '& input': {
-              color: '#fff',
-              
-            },
-            '& .MuiInputBase-input::placeholder': {
-              color: '#9e9e9e',
-            },
-          },
-          '& textarea': {
-            overflowY:'auto',
-            color:'#fff',
-            '&::-webkit-scrollbar': {
-          width: '4px',
-        },
-        '&::-webkit-scrollbar-thumb': {
-          backgroundColor: "#363D40", // Цвет полосы прокрутки
-          borderRadius: '4px', // Скругление углов
-        },
-        '&::-webkit-scrollbar-thumb:hover': {
-          backgroundColor: "#535E61", // Цвет при наведении
-        },
-        '&::-webkit-scrollbar-track': {
-          backgroundColor: "#262120", // Цвет трека скроллбара
-          borderRadius: '4px',
-        },
-            '&:focus': {
-            },
-          },
-        }}
-        InputLabelProps={{
-          sx: {
-            color: '#9e9e9e',
-          },
-        }}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton 
-                type="submit" 
-                aria-label="send"
-                disabled={isLoading}
-                sx={{
-                  bgcolor:"#fff", 
-                  p:"6px",
-                  display:"flex",
-                  alignItems:"center",
-                  transition:"all 0.2s ease",
-                  "&:hover": {
-                    bgcolor:"#aaa", 
-                  },
-                }}
-              >
-                <SendIcon />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
-    </form>
+    <Paper
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        backgroundColor: "background.default",
+        zIndex: 1000,
+        padding: 'auto 15px',
+        position: 'fixed',
+        bottom: '0',
+        left: '0',
+        width: '100%',
+      }}
+    >
+      <form
+        onSubmit={handleSubmit}
+        style={{ flex: 1, display: "flex", alignItems: "center" }}
+      >
+        <TextField
+          multiline
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Type a message..."
+          InputProps={{
+            inputRef: textareaRef,
+            style: {
+              padding: 'auto 15px',
+              borderRadius: '26px',
+              height: Math.min(textareaHeight, 23 * 5), // 5 lines max height
+              maxHeight: Math.min(textareaHeight, 23 * 5) // 5 lines max height
+            }
+          }}
+          sx={{ flexGrow: 1, marginRight: "10px" }}
+        />
+      </form>
+    </Paper>
   );
-});
+};
 
 export default MessageInput;

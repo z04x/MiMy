@@ -1,18 +1,13 @@
-import React, { useState, useEffect, useRef, FormEvent } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Box } from "@mui/material";
 import { useParams } from "react-router-dom";
-// import Header from "./Header";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
-// import ChatList from './ChatList';
 import { Message } from "../interfaces/Message";
 import User from "../interfaces/User";
-import {
-  getMessagesFromDialog,
-  getStreamResponse,
-  createChat,
-} from "../services/dialogService";
+import { getMessagesFromDialog, getStreamResponse, createChat } from "../services/dialogService";
 import { getUser } from "../services/userService";
+import { initMainButton } from '@telegram-apps/sdk';
 
 const Chat: React.FC = () => {
   const { chatId = "" } = useParams<{ chatId: string }>();
@@ -37,13 +32,11 @@ const Chat: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Load messages when chatId or selectedChatId changes
     const loadMessages = async () => {
       if (selectedChatId || chatId) {
         const dialogId = selectedChatId || parseInt(chatId, 10);
         try {
           const response = await getMessagesFromDialog(dialogId);
-          console.log(response);
           setMessages(response.reverse());
           setIsLoading(false);
         } catch (error) {
@@ -55,9 +48,7 @@ const Chat: React.FC = () => {
     loadMessages();
   }, [selectedChatId, chatId]);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = useCallback(async () => {
     if (!prompt.trim()) return;
 
     const userMessage: Message = { text: prompt, isUser: true };
@@ -67,7 +58,6 @@ const Chat: React.FC = () => {
       isLoading: true,
     };
 
-    // Добавляем сообщения пользователя и загрузки в конец массива
     setMessages((prevMessages) => [
       ...prevMessages,
       userMessage,
@@ -85,7 +75,7 @@ const Chat: React.FC = () => {
         }
 
         if (dialogId !== null) {
-          const assitantResponse: Message = {
+          const assistantResponse: Message = {
             text: null,
             isUser: false,
             isLoading: true,
@@ -94,14 +84,14 @@ const Chat: React.FC = () => {
 
           setMessages((prevMessages) => {
             const updatedMessages = [...prevMessages];
-            updatedMessages.pop(); // Удаляем последнее сообщение (сообщение загрузки)
-            return [...updatedMessages, assitantResponse];
+            updatedMessages.pop();
+            return [...updatedMessages, assistantResponse];
           });
         }
       } catch (error) {
         console.error("Error handling message submission:", error);
         setMessages((prevMessages) => {
-          const updatedMessages = prevMessages.slice(0, -1); // Убираем сообщение загрузки
+          const updatedMessages = prevMessages.slice(0, -1);
           const errorMessage: Message = {
             text: "An error occurred. Please try again later.",
             isUser: false,
@@ -112,7 +102,7 @@ const Chat: React.FC = () => {
     } else {
       console.error("No user data available");
       setMessages((prevMessages) => {
-        const updatedMessages = prevMessages.slice(0, -1); // Убираем сообщение загрузки
+        const updatedMessages = prevMessages.slice(0, -1);
         const errorMessage: Message = {
           text: "Error: user data not found.",
           isUser: false,
@@ -120,36 +110,66 @@ const Chat: React.FC = () => {
         return [...updatedMessages, errorMessage];
       });
     }
-  };
+  }, [prompt, user, selectedChatId, chatId]);
+
+  useEffect(() => {
+    const [mainButton] = initMainButton();
+
+    if (mainButton) {
+      mainButton.setText('Send');
+      mainButton.show();
+
+      // Set up the button parameters
+      mainButton.setParams({
+        text: 'Send',
+        isVisible: true,
+      });
+
+      // Simulate button click handling by polling
+      const interval = setInterval(() => {
+        if (mainButton.isEnabled) {
+          handleSubmit();
+        }
+      });
+
+      return () => {
+        clearInterval(interval);
+        mainButton.hide();
+      };
+    }
+  }, [handleSubmit]);
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   return (
-    <Box sx={{ display: "flex", height: "100vh", pb: 1 }}>
-      {/* <ChatList onSelectChat={setSelectedChatId} /> */}
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Box
         sx={{
           flexGrow: 1,
           display: "flex",
           flexDirection: "column",
           width: "100%",
+          overflowY: 'auto',
         }}
       >
-        {/* <Header chatId={chatId} /> */}
         <MessageList
           setLoading={setIsLoading}
           messages={messages}
           endOfMessagesRef={endOfMessagesRef}
         />
-        <MessageInput
-          prompt={prompt}
-          setPrompt={setPrompt}
-          handleSubmit={handleSubmit}
-          isLoading={isLoading}
-        />
+        <Box sx={{ height: '10px' }} ref={endOfMessagesRef} />
       </Box>
+      <MessageInput
+        prompt={prompt}
+        setPrompt={setPrompt}
+        handleSubmit={(e) => {
+          e.preventDefault(); // Prevent the default form behavior
+          handleSubmit(); // Call the handleSubmit function
+        }}
+        isLoading={isLoading}
+      />
     </Box>
   );
 };

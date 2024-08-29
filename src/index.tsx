@@ -6,7 +6,7 @@ import ErrorBoundary from './components/ErrorUI/ErrorBoundary';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
-  <React.StrictMode>
+  <React.StrictMode >
     <ErrorBoundary>
       <App />
     </ErrorBoundary>

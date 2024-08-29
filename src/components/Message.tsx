@@ -57,7 +57,7 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
     <Box
       key={index}
       sx={{
-        mb: 3,
+        mb: 1.5,
         display: "flex",
         width: "100%",
         justifyContent: "center",
@@ -71,7 +71,7 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
           p: message.isUser ? 1 : 3,
           borderRadius: message.isUser ? "16px 16px 0 16px" : "16px 16px 16px 0",
           backgroundColor: message.isUser ? "colors.paper" : "colors.default",
-          color: message.isUser ? "#000" : "#fff",
+          color: message.isUser ? "#fff" : "#fff",
           boxShadow: 0,
           minHeight: "0px",
           display: "flex",
@@ -114,11 +114,11 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
                           justifyContent: 'space-between',
                           alignItems: 'center',
                           color: '#fff',
-                          padding: '4px 12px 0 12px',
+                          padding: '7px 10px 0px 10px',
                           
                         }}
                       >
-                        <Typography variant="body2" sx={{ fontSize: '14px', fontWeight: 'bold' }}>
+                        <Typography variant="body2" sx={{ fontSize: '10px', fontWeight: 'bold' }}>
                           {match ? match[1].toUpperCase() : 'CODE'}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -127,7 +127,7 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
                           </IconButton>
                           <Typography
                             variant="body2"
-                            sx={{ color: "#fff", cursor: 'pointer', fontSize: '14px', ml: 1 }}
+                            sx={{ color: "#fff", cursor: 'pointer', fontSize: '10px', ml: 1 }}
                             onClick={() => handleCodeCopy(codeString)}
                           >
                             {codeCopyStatus}
@@ -163,15 +163,15 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
                 gap: '3px',
                 p: '5px 10px',
                 borderRadius: '99px',
-                bgcolor: message.isUser ? "#C9C9C9" : "#454948",
+                bgcolor: message.isUser ? "#1F232217" : "#FFFFFF17",
               }}
             >
-              <IconButton onClick={handleCopy} sx={{ color: message.isUser ? "#1F2322" : "#fff", p: 0 }}>
+              <IconButton onClick={handleCopy} sx={{ color: message.isUser ? "#fff" : "#fff", p: 0 }}>
                 <ContentCopyIcon sx={{ width: '16px', height: 'auto' }} />
               </IconButton>
               <Typography
                 variant="body2"
-                sx={{ color: message.isUser ? "#1F2322" : "#fff", cursor: 'pointer', fontSize: '14px' }}
+                sx={{ color: message.isUser ? "#fff" : "#fff", cursor: 'pointer', fontSize: '14px' }}
                 onClick={handleCopy}
               >
                 {copyStatus}

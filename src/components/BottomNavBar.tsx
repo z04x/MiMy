@@ -16,7 +16,7 @@ const BottomNavBar: React.FC<{ current: string }> = ({ current }) => {
       onChange={(event, newValue) => {
         navigate(newValue);
       }}
-      sx={{ position: 'fixed', bottom: 0, width: '100%' }}
+      sx={{ position: 'fixed', bottom: 0, width: '100%'}}
     >
       <BottomNavigationAction label="Home" value="/" icon={<HomeIcon />} />
       <BottomNavigationAction label="History" value="/chat-history" icon={<HistoryIcon />} />

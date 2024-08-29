@@ -1,65 +1,64 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Box, Typography } from "@mui/material";
-import { useRef } from "react";
 import { Message } from "../interfaces/Message";
 import MessageComponent from "./Message";
 
 interface MessageListProps {
   messages: Message[];
   endOfMessagesRef: React.RefObject<HTMLDivElement>;
-  setLoading: (isLoading: boolean) => void; // Добавляем setLoading в пропсы
+  setLoading: (isLoading: boolean) => void;
 }
 
 const MessageList: React.FC<MessageListProps> = ({
   messages,
   endOfMessagesRef,
-  setLoading, // Принимаем setLoading как пропс
+  setLoading,
 }) => {
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    // Прокрутка в самый низ при первом рендере и обновлении сообщений
     const container = messageContainerRef.current;
     if (container) {
-      setTimeout(() => {
-        container.scrollTop = container.scrollHeight;
-      }, 50); // Сделал через setTimeout, хз как по другому.. Так как без него не листаеться в саммый конец, за за того что не все сообщения успевают прогрузиться.
-    } // можно конечно добавить слушатель на загрузку сообщений и когда все сообщения загрузились, скролить
+      // Scroll to the bottom
+      container.scrollTop = container.scrollHeight;
+    }
   }, [messages]);
-  
+
   return (
     <Box
       ref={messageContainerRef}
       sx={{
-        mb: 1,
-        width:'auto',
-        height:'100vh',
+        mt: 1, 
+        width: '100%',
+        height: '100%',
         overflowY: "auto",
         borderRadius: "0px",
         p: 1,
         backgroundColor: "background.default",
+        paddingBottom: '10px', // Additional padding for input
         '&::-webkit-scrollbar': {
           width: '4px',
         },
         '&::-webkit-scrollbar-thumb': {
-          backgroundColor: "#363D40", // Цвет полосы прокрутки
-          borderRadius: '4px', // Скругление углов
+          backgroundColor: "#363D40",
+          borderRadius: '4px',
         },
         '&::-webkit-scrollbar-thumb:hover': {
-          backgroundColor: "#535E61", // Цвет при наведении
+          backgroundColor: "#535E61",
         },
         '&::-webkit-scrollbar-track': {
-          backgroundColor: "#262120", // Цвет трека скроллбара
+          backgroundColor: "#262120",
           borderRadius: '4px',
         },
       }}
     >
-      {messages?.length > 0 ? (
+      {messages.length > 0 ? (
         messages.map((message, index) => (
           <ul key={index}>
-            <MessageComponent 
+            <MessageComponent
               setLoading={setLoading}
-              message={message} 
-              index={index} 
+              message={message}
+              index={index}
             />
           </ul>
         ))

@@ -50,7 +50,7 @@
 html {
   -moz-text-size-adjust: none;
   -webkit-text-size-adjust: none;
-  text-size-adjust: none;
+  margin: 0; /* Удаляет любые отступы */
 }
 
 /* Remove default margin in favour of better control in authored CSS */
@@ -67,8 +67,7 @@ ol[role='list'] {
 
 /* Set core body defaults */
 body {
-  min-height: 100vh;
-  line-height: 1.5;
+
 }
 
 /* Set shorter line heights on headings and interactive elements */

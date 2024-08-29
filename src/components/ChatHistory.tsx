@@ -1,22 +1,56 @@
-// src/components/ChatHistory.tsx
 import React, { useState, useEffect } from "react";
-import { Box, Button, Typography, IconButton, Avatar } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Box,
+  Typography,
+  IconButton,
+  Avatar,
+  TextField,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import BottomNavBar from "./BottomNavBar";
-import { getChatHistory, deleteChat } from "../services/dialogService";
+import { getChatHistory, deleteChat, renameChat } from "../services/dialogService";
 import Chat from "../interfaces/Chat";
+import ModalWindow from "./ModalWindow";
+import gptIcon from "../assets/images/chatgpt-6.svg";
+import mistralIcon from "../assets/images/mistral-ai-icon-seeklogo.svg";
+import { useNavigate } from "react-router-dom";
+
+const sanitizeInput = (input: string): string => {
+  return input.replace(/<\/?[^>]+>/gi, "");
+};
+
+const validateInput = (input: string): boolean => {
+  return input.trim().length > 0;
+};
+
+const formatDate = (dateString: string | null): string => {
+  if (!dateString) return "No updates";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
 
 const ChatHistory: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<Chat[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [renameDialogOpen, setRenameDialogOpen] = useState<boolean>(false);
+  const [newTitle, setNewTitle] = useState<string>("");
+  const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [currentChatId, setCurrentChatId] = useState<number | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchChatHistory = async () => {
       try {
         const chats = await getChatHistory();
-        console.log(chats);
         setChatHistory(chats);
         setLoading(false);
       } catch (error) {
@@ -38,58 +72,143 @@ const ChatHistory: React.FC = () => {
     }
   };
 
+  const handleOpenRenameDialog = (chat: Chat) => {
+    setSelectedChatId(chat.dialog_id);
+    setNewTitle(chat.title || `Chat ${chat.dialog_id}`);
+    setRenameDialogOpen(true);
+  };
+
+  const handleRenameChat = async () => {
+    if (selectedChatId === null || !validateInput(newTitle)) {
+      console.error("No chat selected or new title is empty.");
+      return;
+    }
+
+    try {
+      const sanitizedTitle = sanitizeInput(newTitle.trim());
+      await renameChat(selectedChatId, sanitizedTitle);
+      setChatHistory((prevChats) =>
+        prevChats.map((chat) =>
+          chat.dialog_id === selectedChatId ? { ...chat, title: sanitizedTitle } : chat
+        )
+      );
+      handleCloseRenameDialog();
+    } catch (error) {
+      console.error("Error renaming chat:", error);
+    }
+  };
+
+  const handleCloseRenameDialog = () => {
+    setRenameDialogOpen(false);
+    setNewTitle("");
+  };
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, chatId: number) => {
+    setAnchorEl(event.currentTarget);
+    setCurrentChatId(chatId);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setCurrentChatId(null);
+  };
+
+  const handleDeleteFromMenu = () => {
+    if (currentChatId !== null) {
+      handleDeleteChat(currentChatId);
+      handleMenuClose();
+    }
+  };
+
+  const handleChatClick = (chatId: number) => {
+    navigate(`/chat/${chatId}`);
+  };
+
   const getModelAvatar = (model: string) => {
+    const avatarStyle = {
+      mr: 2,
+      p: 1,
+      bgcolor: "black",
+      width: 40,
+      height: 40,
+    };
     switch (model) {
       case "gpt-4o-mini":
-        return <Avatar sx={{ bgcolor: "blue", mr: 2 }}>G</Avatar>;
+        return <Avatar src={gptIcon} sx={avatarStyle} />;
       case "mistral":
-        return <Avatar sx={{ bgcolor: "green", mr: 2 }}>M</Avatar>;
+        return <Avatar src={mistralIcon} sx={avatarStyle} />;
       default:
-        return <Avatar sx={{ bgcolor: "grey", mr: 2 }}>?</Avatar>;
+        return <Avatar sx={{ bgcolor: "green", mr: 2 }}>?</Avatar>;
     }
   };
 
   return (
-    <Box sx={{ mt: 4, maxWidth: "600px", mx: "auto" }}>
-      <Typography variant="h4" component="div" sx={{ mb: 4 }}>
-        История чатов
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", height: "100vh", width: "100%", overflow: 'auto' }}>
+      <Typography variant="h4" component="div" sx={{ mb: 4, color: '#fff' }}>
+        Chat History
       </Typography>
       {loading ? (
-        <Typography variant="body1">Загрузка...</Typography>
+        <Typography variant="body1">Loading...</Typography>
       ) : chatHistory.length > 0 ? (
-        <Box>
+        <Box sx={{ display: "flex", flexDirection: 'column', width: "100%" }}>
           {chatHistory.map((chat) => (
             <Box
               key={chat.dialog_id}
-              sx={{ display: "flex", alignItems: "center", mb: 2 }}
+              sx={{ display: "flex", alignItems: "center", mb: '12px', bgcolor: 'background.paper', width: "100%", p: '8px 12px', borderRadius: '16px', cursor: 'pointer' }}
+              onClick={() => handleChatClick(chat.dialog_id)}
             >
               {getModelAvatar(chat.model)}
-              <Button
-                component={Link}
-                to={`/chat/${chat.dialog_id}`}
-                variant="contained"
-                color="primary"
-                fullWidth
-                sx={{ flexGrow: 1, mr: 2 }}
-              >
-                {chat.title || `Chat ${chat.dialog_id}`}
-              </Button>
+              <Box sx={{ flexGrow: 1, p: 0, m: 0 }}>
+                <Typography sx={{ color: '#fff', fontWeight: '400', lineHeight: '22px' }} variant="h6">{chat.title || `Chat ${chat.dialog_id}`}</Typography>
+                <Typography variant="body2" color="#B3B4B4">
+                  Last updated: {formatDate(chat.updated_at)}
+                </Typography>
+              </Box>
               <IconButton
-                onClick={() => handleDeleteChat(chat.dialog_id)}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent triggering chat navigation when opening the menu
+                  handleMenuOpen(e, chat.dialog_id);
+                }}
                 color="secondary"
               >
-                <DeleteIcon />
+                <MoreVertIcon />
               </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={(e) => { e.stopPropagation(); handleMenuClose(); handleOpenRenameDialog(chat); }}>
+                  <EditIcon sx={{ mr: 1 }} /> Rename Chat
+                </MenuItem>
+                <MenuItem onClick={(e) => { e.stopPropagation(); handleDeleteFromMenu(); }}>
+                  <DeleteIcon sx={{ mr: 1 }} /> Delete Chat
+                </MenuItem>
+              </Menu>
             </Box>
           ))}
         </Box>
       ) : (
-        <Typography variant="body1">Нет доступной истории чатов</Typography>
+        <Typography variant="body1">No chat history available</Typography>
       )}
-      <>
-        {/* Содержимое ChatHistory */}
-        <BottomNavBar current="/history" />
-      </>
+
+      <ModalWindow
+        open={renameDialogOpen}
+        onClose={handleCloseRenameDialog}
+        title="Rename the chat"
+        onSave={handleRenameChat}
+      >
+        <TextField
+          fullWidth
+          variant="outlined"
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          autoFocus
+          InputProps={{}}
+        />
+      </ModalWindow>
+
+      <BottomNavBar current="/history" />
     </Box>
   );
 };
