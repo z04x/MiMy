@@ -5,20 +5,25 @@ import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 import { Message } from "../interfaces/Message";
 import User from "../interfaces/User";
-import { getMessagesFromDialog, getStreamResponse, createChat } from "../services/dialogService";
+import {
+  getMessagesFromDialog,
+  getStreamResponse,
+  createChat,
+} from "../services/dialogService";
 import { getUser } from "../services/userService";
-import { initMainButton } from '@telegram-apps/sdk';
+import { initMainButton } from "@telegram-apps/sdk";
 
 const Chat: React.FC = () => {
   const { chatId = "" } = useParams<{ chatId: string }>();
-  const [prompt, setPrompt] = useState<string>("");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
-  const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
+  const [mainButton] = initMainButton();
+  const messageInputRef = useRef<HTMLInputElement>(null);
+  const [messages, setMessages] = useState<Message[]>([]); // Move into MessagesList
+  const [isLoading, setIsLoading] = useState(false); // Move into MessagesList
+  const [user, setUser] = useState<User | null>(null); // Is it needed? Probably, should be a prop or Context
+  const [selectedChatId, setSelectedChatId] = useState<number | null>(null); // Is it needed?
+  const endOfMessagesRef = useRef<HTMLDivElement | null>(null); // Is it needed?
 
-  useEffect(() => {
+  useEffect(() => { // Is it needed?
     const fetchUserData = async () => {
       try {
         const user = await getUser();
@@ -31,7 +36,7 @@ const Chat: React.FC = () => {
     fetchUserData();
   }, []);
 
-  useEffect(() => {
+  useEffect(() => {  // Move into MessagesList
     const loadMessages = async () => {
       if (selectedChatId || chatId) {
         const dialogId = selectedChatId || parseInt(chatId, 10);
@@ -48,7 +53,7 @@ const Chat: React.FC = () => {
     loadMessages();
   }, [selectedChatId, chatId]);
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = async (prompt: string) => { // Split into two functions
     if (!prompt.trim()) return;
 
     const userMessage: Message = { text: prompt, isUser: true };
@@ -63,7 +68,6 @@ const Chat: React.FC = () => {
       userMessage,
       loadingMessage,
     ]);
-    setPrompt("");
 
     if (user) {
       try {
@@ -110,34 +114,39 @@ const Chat: React.FC = () => {
         return [...updatedMessages, errorMessage];
       });
     }
-  }, [prompt, user, selectedChatId, chatId]);
+  };
 
   useEffect(() => {
-    const [mainButton] = initMainButton();
-
     if (mainButton) {
-      mainButton.setText('Send');
+      mainButton.setText("Send");
       mainButton.show();
 
       // Set up the button parameters
       mainButton.setParams({
-        text: 'Send',
+        text: "Send ->",
         isVisible: true,
       });
 
-      // Simulate button click handling by polling
-      const interval = setInterval(() => {
-        if (mainButton.isEnabled) {
-          handleSubmit();
+      console.log("MainButton effect added");
+      mainButton.on("click", () => {
+        if (messageInputRef.current) {
+          console.log(messageInputRef.current.value);
         }
       });
 
+      // Simulate button click handling by polling
+      // const interval = setInterval(() => {
+      //   if (mainButton.isEnabled) {
+      //     handleSubmit();
+      //   }
+      // });
+
       return () => {
-        clearInterval(interval);
+        // clearInterval(interval);
         mainButton.hide();
       };
     }
-  }, [handleSubmit]);
+  });
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -151,7 +160,7 @@ const Chat: React.FC = () => {
           display: "flex",
           flexDirection: "column",
           width: "100%",
-          overflowY: 'auto',
+          overflowY: "auto",
         }}
       >
         <MessageList
@@ -159,14 +168,13 @@ const Chat: React.FC = () => {
           messages={messages}
           endOfMessagesRef={endOfMessagesRef}
         />
-        <Box sx={{ height: '10px' }} ref={endOfMessagesRef} />
+        <Box sx={{ height: "10px" }} ref={endOfMessagesRef} />
       </Box>
       <MessageInput
-        prompt={prompt}
-        setPrompt={setPrompt}
-        handleSubmit={(e) => {
-          e.preventDefault(); // Prevent the default form behavior
-          handleSubmit(); // Call the handleSubmit function
+        ref={messageInputRef}
+        mainButton={mainButton}
+        sendPromptToServer={(prompt: string) => {
+          handleSubmit(prompt); // Call the handleSubmit function
         }}
         isLoading={isLoading}
       />
