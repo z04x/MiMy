@@ -13,9 +13,10 @@ import {
 import { getUser } from "../services/userService";
 import { initMainButton } from "@telegram-apps/sdk";
 
+const [mainButton] = initMainButton();
+
 const Chat: React.FC = () => {
   const { chatId = "" } = useParams<{ chatId: string }>();
-  const [mainButton] = initMainButton();
   const messageInputRef = useRef<HTMLInputElement>(null);
   const [messages, setMessages] = useState<Message[]>([]); // Move into MessagesList
   const [isLoading, setIsLoading] = useState(false); // Move into MessagesList
@@ -23,7 +24,8 @@ const Chat: React.FC = () => {
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null); // Is it needed?
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null); // Is it needed?
 
-  useEffect(() => { // Is it needed?
+  useEffect(() => {
+    // Is it needed?
     const fetchUserData = async () => {
       try {
         const user = await getUser();
@@ -36,8 +38,31 @@ const Chat: React.FC = () => {
     fetchUserData();
   }, []);
 
-  useEffect(() => {  // Move into MessagesList
+  useEffect(() => {
+    const setupMainButton = async () => {
+      // Set up the button parameters
+      mainButton.setParams({
+        text: "Send ->",
+        isVisible: true,
+      });
+
+      console.log("MainButton effect added");
+      mainButton.on("click", () => {
+        if (messageInputRef.current) {
+          handleSubmit(messageInputRef.current.value);
+        }
+      });
+    };
+    setupMainButton();
+    return () => {
+      mainButton.hide();
+    };
+  }, []);
+
+  useEffect(() => {
+    // Move into MessagesList
     const loadMessages = async () => {
+      console.log("LoadMessages");
       if (selectedChatId || chatId) {
         const dialogId = selectedChatId || parseInt(chatId, 10);
         try {
@@ -50,10 +75,30 @@ const Chat: React.FC = () => {
       }
     };
 
+    // const setupMainButton = async () => {
+    //   mainButton.setText("Send");
+    //   mainButton.show();
+
+    //   // Set up the button parameters
+    //   mainButton.setParams({
+    //     text: "Send ->",
+    //     isVisible: true,
+    //   });
+
+    //   console.log("MainButton effect added");
+    //   mainButton.on("click", () => {
+    //     if (messageInputRef.current) {
+    //       console.log(messageInputRef.current.value);
+    //     }
+    //   });
+    // };
+
     loadMessages();
+    // setupMainButton();
   }, [selectedChatId, chatId]);
 
-  const handleSubmit = async (prompt: string) => { // Split into two functions
+  const handleSubmit = async (prompt: string) => {
+    // Split into two functions
     if (!prompt.trim()) return;
 
     const userMessage: Message = { text: prompt, isUser: true };
@@ -115,38 +160,6 @@ const Chat: React.FC = () => {
       });
     }
   };
-
-  useEffect(() => {
-    if (mainButton) {
-      mainButton.setText("Send");
-      mainButton.show();
-
-      // Set up the button parameters
-      mainButton.setParams({
-        text: "Send ->",
-        isVisible: true,
-      });
-
-      console.log("MainButton effect added");
-      mainButton.on("click", () => {
-        if (messageInputRef.current) {
-          console.log(messageInputRef.current.value);
-        }
-      });
-
-      // Simulate button click handling by polling
-      // const interval = setInterval(() => {
-      //   if (mainButton.isEnabled) {
-      //     handleSubmit();
-      //   }
-      // });
-
-      return () => {
-        // clearInterval(interval);
-        mainButton.hide();
-      };
-    }
-  });
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
