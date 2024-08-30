@@ -38,6 +38,8 @@ const formatDate = (dateString: string | null): string => {
 };
 
 const ChatHistory: React.FC = () => {
+  // const [isButtonVisible, setIsButtonVisible] = useState<boolean>(true);
+
   const [chatHistory, setChatHistory] = useState<Chat[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [renameDialogOpen, setRenameDialogOpen] = useState<boolean>(false);
@@ -49,6 +51,7 @@ const ChatHistory: React.FC = () => {
 
   useEffect(() => {
     const fetchChatHistory = async () => {
+      // setIsButtonVisible(false);
       try {
         const chats = await getChatHistory();
         setChatHistory(chats);
@@ -143,18 +146,18 @@ const ChatHistory: React.FC = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", height: "100vh", width: "100%", overflow: 'auto' }}>
+    <Box sx={{ display: "flex", height: "100vh", flexDirection: "column", alignItems: "center", width: "100%", pb:'62px'}}>
       <Typography variant="h4" component="div" sx={{ mb: 4, color: '#fff' }}>
         Chat History
       </Typography>
       {loading ? (
         <Typography variant="body1">Loading...</Typography>
       ) : chatHistory.length > 0 ? (
-        <Box sx={{ display: "flex", flexDirection: 'column', width: "100%" }}>
+        <Box sx={{ display: "flex", flexDirection: 'column', width: "100%", overflowY:'auto',  height: "100%"}}>
           {chatHistory.map((chat) => (
             <Box
               key={chat.dialog_id}
-              sx={{ display: "flex", alignItems: "center", mb: '12px', bgcolor: 'background.paper', width: "100%", p: '8px 12px', borderRadius: '16px', cursor: 'pointer' }}
+              sx={{ display: "flex", alignItems: "center", mb: '12px', bgcolor: 'background.paper', width: "100%", p: '32px 12px', borderRadius: '16px', cursor: 'pointer' }}
               onClick={() => handleChatClick(chat.dialog_id)}
             >
               {getModelAvatar(chat.model)}

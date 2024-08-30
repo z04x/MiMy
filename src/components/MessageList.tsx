@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { Message } from "../interfaces/Message";
 import MessageComponent from "./Message";
@@ -14,33 +14,86 @@ const MessageList: React.FC<MessageListProps> = ({
   endOfMessagesRef,
   setLoading,
 }) => {
-  const messageContainerRef = useRef<HTMLDivElement | null>(null);
+  const messageContainerRef = useRef<HTMLDivElement>(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
+  // Function to check if user is at the bottom
+  const checkIfAtBottom = () => {
+    const container = messageContainerRef.current;
+    if (container) {
+      const scrollTop = container.scrollTop;
+      const scrollHeight = container.scrollHeight;
+      const clientHeight = container.clientHeight;
+      setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 1);
+    }
+  };
+
+  // Scroll to the bottom with a slight delay
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      const container = messageContainerRef.current;
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
+    }, 100); // Adjust delay as needed (e.g., 100 milliseconds)
+  };
+
+  // Scroll to bottom on initial load
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
+
+  // Handle scrolling for new messages and check if user is at bottom
+  useEffect(() => {
+    if (isAtBottom) {
+      scrollToBottom();
+    }
+  }, [messages, isAtBottom]);
+
+  // Continuously check if user is at the bottom
+  useEffect(() => {
+    const container = messageContainerRef.current;
+    let intervalId: NodeJS.Timeout | null = null;
+
+    if (container) {
+      intervalId = setInterval(() => {
+        checkIfAtBottom();
+      }, 100); // Adjust interval as needed (e.g., 100 milliseconds)
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, []);
+
+  // Check if user is at the bottom on scroll
   useEffect(() => {
     const container = messageContainerRef.current;
     if (container) {
-      // Scroll to the bottom
-      container.scrollTop = container.scrollHeight;
+      container.addEventListener("scroll", checkIfAtBottom);
+      return () => {
+        container.removeEventListener("scroll", checkIfAtBottom);
+      };
     }
-  }, [messages]);
+  }, []);
 
   return (
     <Box
       ref={messageContainerRef}
       sx={{
-        mt: 1, 
+        mt: 1,
         width: '100%',
-        height: '100%',
-        overflowY: "auto",
-        borderRadius: "0px",
-        p: 1,
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        borderRadius: 0,
+        p: 2,
         backgroundColor: "background.default",
         paddingBottom: '10px', // Additional padding for input
         '&::-webkit-scrollbar': {
           width: '4px',
         },
         '&::-webkit-scrollbar-thumb': {
-          backgroundColor: "#363D40",
+          backgroundColor: "#fff",
           borderRadius: '4px',
         },
         '&::-webkit-scrollbar-thumb:hover': {
@@ -53,19 +106,21 @@ const MessageList: React.FC<MessageListProps> = ({
       }}
     >
       {messages.length > 0 ? (
-        messages.map((message, index) => (
-          <ul key={index}>
+        <>
+          {messages.map((message, index) => (
             <MessageComponent
-              setLoading={setLoading}
+              key={index} // Ensure a unique key if possible
               message={message}
               index={index}
+              setLoading={setLoading}
             />
-          </ul>
-        ))
+          ))}
+          {/* Reference to scroll into view can be useful for new messages */}
+          <div ref={endOfMessagesRef} />
+        </>
       ) : (
         <Typography variant="body1">No messages</Typography>
       )}
-      <div ref={endOfMessagesRef} />
     </Box>
   );
 };

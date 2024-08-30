@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState, useCallback } from "react";
+import React, { memo, useState, useCallback, useEffect } from "react";
 import { Box, CircularProgress, IconButton, Typography } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -14,44 +14,68 @@ interface MessageProps {
 
 const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoading }) => {
   const [body, setBody] = useState("");
-  const [copyStatus, setCopyStatus] = useState("Copy");
-  const [codeCopyStatus, setCodeCopyStatus] = useState("Copy");
+  const [copyStatus, setCopyStatus] = useState("");
+  const [codeCopyStatus, setCodeCopyStatus] = useState("");
 
   useEffect(() => {
     if (message.text) {
       setBody(message.text);
       setLoading(false);
-    } else {
-      if (message.readPromptResponse) {
-        let result = "";
-        setLoading(true);
-        message.readPromptResponse.then(async (reader) => {
-          while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            result += value;
-            setBody(result);
-          }
-          setLoading(false);
-        });
-        message.isLoading = false;
-      }
+    } else if (message.readPromptResponse) {
+      let result = "";
+      setLoading(true);
+      message.readPromptResponse.then(async (reader) => {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          result += value;
+          setBody(result);
+        }
+        setLoading(false);
+      });
+      message.isLoading = false;
     }
   }, [message, setLoading]);
 
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(body).then(() => {
-      setCopyStatus("Copied!");
-      setTimeout(() => setCopyStatus("Copy"), 2000);
-    });
-  }, [body]);
-
-  const handleCodeCopy = useCallback((code: string) => {
-    navigator.clipboard.writeText(code).then(() => {
-      setCodeCopyStatus("Copied!");
-      setTimeout(() => setCodeCopyStatus("Copy"), 2000);
-    });
+  const copyToClipboard = useCallback(async (text: string, statusUpdater: React.Dispatch<React.SetStateAction<string>>) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      statusUpdater("Copied!");
+      // Log for debugging
+      console.log("Text copied to clipboard");
+      setTimeout(() => {
+        statusUpdater("");
+        console.log("Status reset to Copy");
+      }, 1000); // 1 second timeout
+    } catch (err) {
+      console.warn('Failed to copy text:', err);
+      fallbackCopyTextToClipboard(text, statusUpdater);
+    }
   }, []);
+
+  const fallbackCopyTextToClipboard = (text: string, statusUpdater: React.Dispatch<React.SetStateAction<string>>) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand("copy");
+      statusUpdater("Copied!");
+      // Log for debugging
+      console.log("Fallback text copied to clipboard");
+      setTimeout(() => {
+        statusUpdater("");
+        console.log("Fallback status reset to Copy");
+      }, 1000); // 1 second timeout
+    } catch (err) {
+      console.warn('Failed to copy text using fallback method:', err);
+    }
+    document.body.removeChild(textArea);
+  };
+
+  const handleCopy = useCallback(() => copyToClipboard(body, setCopyStatus), [body, copyToClipboard]);
+
+  const handleCodeCopy = useCallback((codeString: string) => copyToClipboard(codeString, setCodeCopyStatus), [copyToClipboard]);
 
   return (
     <Box
@@ -70,7 +94,7 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
           maxWidth: "100%",
           p: message.isUser ? 1 : 3,
           borderRadius: message.isUser ? "16px 16px 0 16px" : "16px 16px 16px 0",
-          backgroundColor: message.isUser ? "colors.paper" : "colors.default",
+          backgroundColor: message.isUser ? "colors.default" : "background.default",
           color: message.isUser ? "#fff" : "#fff",
           boxShadow: 0,
           minHeight: "0px",
@@ -107,7 +131,7 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
                   const match = /language-(\w+)/.exec(className || "");
                   const codeString = String(children).replace(/\n$/, "");
                   return match ? (
-                    <Box sx={{ position: 'relative', width: '100%', backgroundColor: '#454948', }}>
+                    <Box sx={{ position: 'relative', width: '100%', backgroundColor: '#454948' }}>
                       <Box
                         sx={{
                           display: 'flex',
@@ -121,7 +145,7 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
                         <Typography variant="body2" sx={{ fontSize: '10px', fontWeight: 'bold' }}>
                           {match ? match[1].toUpperCase() : 'CODE'}
                         </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center',}}>
                           <IconButton onClick={() => handleCodeCopy(codeString)} sx={{ color: "#fff", p: 0 }}>
                             <ContentCopyIcon sx={{ width: '16px', height: 'auto' }} />
                           </IconButton>
@@ -139,15 +163,8 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
                       </SyntaxHighlighter>
                     </Box>
                   ) : (
-                    <code
-                      style={{
-                      }}
-                      {...props}
-                    >
-                      <em>
-                      {children}
-                      </em>
-                      
+                    <code {...props}>
+                      <em>{children}</em>
                     </code>
                   );
                 },
@@ -161,9 +178,9 @@ const MessageComponent: React.FC<MessageProps> = memo(({ message, index, setLoad
                 display: 'flex',
                 alignItems: 'center',
                 gap: '3px',
-                p: '5px 10px',
+                p: '5px 0px',
                 borderRadius: '99px',
-                bgcolor: message.isUser ? "#1F232217" : "#FFFFFF17",
+                bgcolor: message.isUser ? "#333736" : "background.default",
               }}
             >
               <IconButton onClick={handleCopy} sx={{ color: message.isUser ? "#fff" : "#fff", p: 0 }}>

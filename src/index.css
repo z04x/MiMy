@@ -44,6 +44,7 @@
   box-sizing: border-box;
   font-family: 'SFProText', sans-serif;
   font-weight: 400;
+  overflow: hidden;
 }
 
 /* Prevent font size inflation */
@@ -51,6 +52,8 @@ html {
   -moz-text-size-adjust: none;
   -webkit-text-size-adjust: none;
   margin: 0; /* Удаляет любые отступы */
+  overflow: hidden;
+
 }
 
 /* Remove default margin in favour of better control in authored CSS */
@@ -67,7 +70,7 @@ ol[role='list'] {
 
 /* Set core body defaults */
 body {
-
+  overflow: hidden;
 }
 
 /* Set shorter line heights on headings and interactive elements */

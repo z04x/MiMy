@@ -1,7 +1,7 @@
 // src/interfaces/User.ts
 
 export default interface User {
-  id: string;
+  id: number;
   username: string;
   first_name: string;
   last_name: string;

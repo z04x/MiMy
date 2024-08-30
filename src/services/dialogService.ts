@@ -18,17 +18,17 @@ export const getMessagesFromDialog = async (dialogId: number) => {
   }
 };
 
-export const getStreamResponse = async (dialogId: number, prompt: string) => {
+export const getStreamResponse = async (dialogId: number, prompt: string): Promise<ReadableStreamDefaultReader<string>> => {
   const response = await fetch(`${BASE_URL}/dialogs/${dialogId}/messages`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      prompt: prompt,
-    }),
+    body: JSON.stringify({ prompt }),
   });
-  return response.body!.pipeThrough(new TextDecoderStream()).getReader();
+
+  const reader = response.body!.pipeThrough(new TextDecoderStream()).getReader();
+  return reader as ReadableStreamDefaultReader<string>;
 };
 
 export const getChatHistory = async (): Promise<Chat[]> => {

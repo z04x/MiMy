@@ -29,7 +29,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container sx={{ bgcolor: 'background.default', position:'fixed',bottom:20, overflow:'hidden', width:'100%', height:'100%',}}>
+      <Container sx={{ bgcolor: 'background.default', position:'fixed', bottom:0,left:0,width:'100%', height:'100%', overflow:'hidden'}}>
         <Router>
           <Routes>
             <Route path="/chat/:chatId" element={<Chat />} />

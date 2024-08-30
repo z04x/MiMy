@@ -12,7 +12,6 @@ export const initTelegram = async () => {
       console.log('Back button pressed');
       window.history.back(); // Возврат на предыдущую страницу
     });
-
     // Отключение вертикальных свайпов
     if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.disableVerticalSwipes();

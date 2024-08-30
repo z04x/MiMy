@@ -1,73 +1,60 @@
-import React, { useState, useEffect } from "react";
-import { TextField, Paper } from "@mui/material";
+import React, { forwardRef, useEffect } from "react";
 import { MainButton } from "@telegram-apps/sdk";
-import { forwardRef } from "react";
+import { TextField } from "@mui/material";
+import usePromptInput from "../hooks/MessageInput/usePromptInput"; // Импортируем хук для управления вводом
+import useResizeObserver from "../hooks/MessageInput/useResizeObserver"; // Импортируем хук для отслеживания изменений размера
+
 interface MessageInputProps {
-  ref: React.RefObject<HTMLDivElement>;
   mainButton: MainButton;
-  sendPromptToServer: (prompt: string) => void; // Ensure this matches your actual type
+  sendPromptToServer: (prompt: string) => void;
   isLoading: boolean;
+  onHeightChange: (height: number) => void;
 }
 
-const MessageInput = forwardRef<HTMLDivElement, MessageInputProps>(
-  function MessageInput({ mainButton, sendPromptToServer, isLoading }, ref) {
-    const [prompt, setPrompt] = useState("");
-
-    const handleSubmit = () => {
-      const savedPrompt = prompt;
-      setPrompt("");
-      // sendPromptToServer(savedPrompt); // Call the handleSubmit function
-      console.log("Saved prompt:", savedPrompt);
-    };
+const MessageInput = forwardRef<HTMLTextAreaElement, MessageInputProps>(
+  function MessageInput({ mainButton, sendPromptToServer, isLoading, onHeightChange }, ref) {
+    const { prompt, handleChange, clearPrompt } = usePromptInput();
+    const formRef = useResizeObserver(() => {
+      if (formRef.current) {
+        const currentHeight = formRef.current.offsetHeight;
+        onHeightChange(currentHeight);
+      }
+    });
 
     useEffect(() => {
-      if (prompt) {
-        mainButton.setParams({
-          isEnabled: true,
-        });
-      } else {
-        mainButton.setParams({
-          isEnabled: false,
-        });
-      }
+      mainButton.setParams({ isEnabled: !!prompt });
     }, [prompt, mainButton]);
 
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      if (prompt.trim()) {
+        sendPromptToServer(prompt);
+        clearPrompt();
+      }
+    };
+
     return (
-      <Paper
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          backgroundColor: "background.default",
-          zIndex: 1000,
-          padding: "auto 15px",
-          position: "fixed",
-          bottom: "0",
-          left: "0",
-          width: "100%",
-        }}
+      <form
+        onSubmit={handleSubmit}
+        ref={formRef}
+        style={{ display: "flex", alignItems: "center" }}
       >
-        <form
-          onSubmit={handleSubmit}
-          style={{ flex: 1, display: "flex", alignItems: "center" }}
-        >
-          <TextField
-            multiline
-            inputRef={ref}
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Type a message..."
-            InputProps={{
-              style: {
-                padding: "auto 15px",
-                borderRadius: "26px",
-                // height: 'auto', // 5 lines max height
-                // maxHeight: 'auto' // 5 lines max height
-              },
-            }}
-            sx={{ flexGrow: 1, marginRight: "10px" }}
-          />
-        </form>
-      </Paper>
+        <TextField
+          multiline
+          maxRows={5}
+          inputRef={ref}
+          value={prompt}
+          onChange={handleChange}
+          placeholder="Type a message..."
+          InputProps={{
+            style: {
+              padding: "auto 15px",
+              borderRadius: "26px",
+            },
+          }}
+          sx={{ flexGrow: 1, marginRight: "10px" }}
+        />
+      </form>
     );
   }
 );
