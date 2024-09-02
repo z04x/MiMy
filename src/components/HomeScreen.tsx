@@ -77,7 +77,7 @@ const HomeScreen: React.FC = () => {
 
       <Box sx={{display:'flex', flexDirection:'column'}}>
         <Button 
-          variant="custom"
+          variant="text"
           onClick={() => handleButtonClick('simple-chat')} 
         >
           <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '89px', height: '100%'}}>
@@ -94,7 +94,7 @@ const HomeScreen: React.FC = () => {
         </Button>
 
         <Button 
-          variant="custom-flipped"
+          variant="text"
           onClick={() => handleButtonClick('sales-generator')}
         >
           <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '89px', height: '100%'}}>
@@ -112,7 +112,7 @@ const HomeScreen: React.FC = () => {
         </Button>
 
         <Button 
-          variant="custom"
+          variant="text"
           onClick={() => handleButtonClick('sentiment-analysis')}
         >
           <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '89px', height: '100%'}}>

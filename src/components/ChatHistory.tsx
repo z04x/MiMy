@@ -71,7 +71,7 @@ const ChatHistory: React.FC = () => {
 
   const handleDeleteChat = async (dialog_id: number) => {
     try {
-      await deleteChat(dialog_id);
+      await deleteChat(user!.user_id, dialog_id);
       setChatHistory((prevChats) =>
         prevChats.filter((chat) => chat.dialog_id !== dialog_id)
       );

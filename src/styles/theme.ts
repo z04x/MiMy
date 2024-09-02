@@ -59,7 +59,7 @@ const theme = createTheme({
     MuiButton: {
       variants: [
         {
-          props: { variant: 'custom' },
+          props: { variant: 'text' },
           style: {
             position: 'relative',
             textTransform: 'none',
@@ -94,7 +94,7 @@ const theme = createTheme({
           },
         },
         {
-          props: { variant: 'custom-flipped' },
+          props: { variant: 'text' },
           style: {
             position: 'relative',
             textTransform: 'none',

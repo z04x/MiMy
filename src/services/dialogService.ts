@@ -41,9 +41,9 @@ export const getChatHistory = async (userId: number): Promise<Chat[]> => {
   }
 };
 
-export const deleteChat = async (dialog_id: number) => {
+export const deleteChat = async (userId: number, dialog_id: number) => {
   try {
-    const reponse = await api.delete(`/dialogs/${dialog_id}`); // убрал слеш
+    const reponse = await api.delete(`/users/${userId}/dialogs/${dialog_id}`); // убрал слеш
     return reponse.data;
   } catch (error) {
     console.error("Error deleting chat:", error);
@@ -53,8 +53,7 @@ export const deleteChat = async (dialog_id: number) => {
 
 export const createChat = async (userId: number, model: string) => {
   try {
-    const response = await api.post(`/dialogs`, {
-      user_id: userId,
+    const response = await api.post(`/users/${userId}/dialogs`, {
       model: model,
     });
     return response.data.dialog_id;
@@ -66,11 +65,7 @@ export const createChat = async (userId: number, model: string) => {
 
 export const getChatsByUserId = async (userId: number): Promise<Chat[]> => {
   try {
-    const response = await api.get(`/dialogs`, {
-      params: {
-        user_id: userId,
-      },
-    });
+    const response = await api.get(`/users/${userId}/dialogs`);
     return response.data;
   } catch (error) {
     console.error("Error fetching dialogs by user ID:", error);
