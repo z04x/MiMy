@@ -8,6 +8,7 @@ import theme from './styles/theme';
 import Chat from './components/Chat';
 import ChatHistory from './components/ChatHistory';
 import HomeScreen from './components/HomeScreen';
+import UpgradePage from './components/UpgradePage';
 import { initTelegram } from './telegramUtils';
 
 const App: React.FC = () => {
@@ -35,6 +36,7 @@ const App: React.FC = () => {
             <Route path="/chat/:chatId" element={<Chat />} />
             <Route path="/chat-history" element={<ChatHistory />} />
             <Route path="/" element={<HomeScreen />} />
+            <Route path="/upgrade" element={<UpgradePage />} />
           </Routes>
         </Router>
       </Container>

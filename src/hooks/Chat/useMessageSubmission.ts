@@ -32,7 +32,7 @@ export const useMessageSubmission = (chatId: string, user: User | null, setMessa
         try {
             const numericChatId = Number(chatId);
             if (!isNaN(numericChatId)) {
-                const dialogId = await handleMessageSubmission(user.id, prompt, numericChatId, setMessages);
+                const dialogId = await handleMessageSubmission(user.user_id, prompt, numericChatId, setMessages);
 
             if (dialogId !== null) {
                 const assistantResponse: Message = {

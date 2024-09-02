@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const BASE_URL = "https://chat.myownwebpage.net";
+export const BASE_URL = "https://api.forgeaibot.com";
 
 const api = axios.create({
   baseURL: BASE_URL,

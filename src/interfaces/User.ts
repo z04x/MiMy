@@ -1,8 +1,12 @@
-// src/interfaces/User.ts
-
 export default interface User {
-  id: number;
+  user_id: number;
   username: string;
-  first_name: string;
-  last_name: string;
+  full_name: string;
+  active: boolean;
+  subscription: {
+    subscription_type: string;
+    available_generations: number;
+    start_date: string;
+    end_date: string;
+  };
 }

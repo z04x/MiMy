@@ -1,4 +1,10 @@
+// theme.ts
+
 import { createTheme } from '@mui/material/styles';
+import Gala from '../assets/images/galactic_stars.png';
+
+// Расширяем типы для кнопок
+import '@mui/material/Button'; // Убедитесь, что это импортировано
 
 const theme = createTheme({
   palette: {
@@ -9,19 +15,18 @@ const theme = createTheme({
       main: '#dc004e',
     },
     background: {
-      default: '#1F2322', // основной фон всего приложения
-      paper: '#2C302F', // фон для компонентов в главном меню
+      default: '#1F2322',
+      paper: '#2C302F',
     },
     colors: {
-      default: '#FFFFFF17', // фон для сообщений от чата
-      paper: '#088C5D', // фон для сообщений от пользователя
-      customBgBtn: '#FFFAFA', // фон для кнопок
-      gray: '#DDDDDD', // исправил ошибку в коде цвета
-      
+      default: '#FFFFFF17',
+      paper: '#088C5D',
+      customBgBtn: '#FFFAFA',
+      gray: '#DDDDDD',
     },
-     custom: {
-      inputBg:'#171A19',
-      sendBg:'#0AA66E'
+    custom: {
+      inputBg: '#171A19',
+      sendBg: '#0AA66E',
     },
   },
   
@@ -34,22 +39,97 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
-            borderRadius: '36px', // Скругление углов
-            border:'1px solid #383939',
-            backgroundColor: '#171A19', // Фоновый цвет
-            color:'#fff',
+            borderRadius: '36px',
+            border: '1px solid #383939',
+            backgroundColor: '#171A19',
+            color: '#fff',
             '& fieldset': {
-              border:'1px solid #383939'
+              border: '1px solid #383939',
             },
             '&:hover fieldset': {
-              border:'1px solid #383939',
+              border: '1px solid #383939',
             },
             '&.Mui-focused fieldset': {
-              border:'1px solid #383939',
+              border: '1px solid #383939',
             },
           },
         },
       },
+    },
+    MuiButton: {
+      variants: [
+        {
+          props: { variant: 'custom' },
+          style: {
+            position: 'relative',
+            textTransform: 'none',
+            boxShadow: 'none',
+            marginBottom: '16px',
+            width: '100%',
+            maxHeight: '104px',
+            height: '100%',
+            borderRadius: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            overflow: 'hidden',
+            backgroundColor: '#FFFFFF0F',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: `url(${Gala})`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+              backgroundSize: 'cover',
+              zIndex: 0,
+            },
+            '& > *': {
+              position: 'relative',
+              zIndex: 1,
+            },
+          },
+        },
+        {
+          props: { variant: 'custom-flipped' },
+          style: {
+            position: 'relative',
+            textTransform: 'none',
+            boxShadow: 'none',
+            marginBottom: '16px',
+            width: '100%',
+            maxHeight: '104px',
+            height: '100%',
+            borderRadius: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            overflow: 'hidden',
+            backgroundColor: '#FFFFFF0F',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: `url(${Gala})`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+              backgroundSize: 'cover',
+              transform: 'rotate(180deg)',
+              zIndex: 0,
+            },
+            '& > *': {
+              position: 'relative',
+              zIndex: 1,
+            },
+          },
+        },
+      ],
     },
   },
 });
