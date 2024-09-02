@@ -1,5 +1,3 @@
-// src/components/HomeScreen.tsx
-
 import React, { useState } from "react";
 import {
   Box,
@@ -13,23 +11,28 @@ import {
 import { useNavigate } from "react-router-dom";
 import BottomNavBar from "./BottomNavBar";
 import { createChat } from "../services/dialogService";
-import { initMainButton } from '@telegram-apps/sdk';
-import { initUser } from "../services/userService";
+import { useUser } from "../contexts/UserContext";
+import { initMainButton } from "@telegram-apps/sdk";
+const [mainButton] = initMainButton(); 
+
+
 const HomeScreen: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [model, setModel] = useState<string>("gpt-4o-mini");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const [mainButton] = initMainButton();
-  // Имитируем получение данных пользователя
-  const user = { id: 1, username: "user", first_name: "John", last_name: "Doe", premium: false }; // Замените это реальными данными
-  mainButton.hide(); // Убедитесь, что метод hide существует
+  const { user } = useUser(); // Получаем пользователя из контекста
+
+  
+  mainButton.hide() //todo вывести кнопку в контекст, что бы скрывать там где она не нужна
+
   const handleCreateChat = async () => {
     setLoading(true);
     setError(null);
     try {
-      const newDialogId = await createChat(123, model);
+      if (!user) throw new Error("User not found"); // Проверяем, что пользователь существует
+      const newDialogId = await createChat(user.user_id, model); // Используем user.user_id
       navigate(`/chat/${newDialogId}`);
     } catch (err) {
       console.error("Error creating chat:", err);
@@ -44,14 +47,15 @@ const HomeScreen: React.FC = () => {
     if (chatType === 'simple-chat') {
       setOpen(true); // Открываем модальное окно для выбора модели
     } else {
-      if (user.premium || chatType !== 'premium') {
+      const isPremium = user?.subscription.subscription_type === 'premium';
+      if (isPremium || chatType !== 'premium') {
         navigate(`/upgrade`); // Переход к чату, если есть премиум или это не премиум чат
       } else {
         navigate('/upgrade'); // Переход на страницу предложения о покупке премиума
       }
     }
   };
-  initUser();
+
   return (
     <Box
       sx={{

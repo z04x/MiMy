@@ -10,9 +10,9 @@ import ChatHistory from './components/ChatHistory';
 import HomeScreen from './components/HomeScreen';
 import UpgradePage from './components/UpgradePage';
 import { initTelegram } from './telegramUtils';
-import { useUser } from './hooks/Chat/useUser';
+import { UserProvider } from './contexts/UserContext'; // Импортируем UserProvider
+
 const App: React.FC = () => {
-  const user = useUser();
   useEffect(() => {
     try {
       const isTelegramWebApp = window.Telegram?.WebApp || window.location !== window.parent.location;
@@ -31,16 +31,18 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container sx={{ bgcolor: 'background.default', position:'fixed', bottom:0,left:0,width:'100%', height:'100%', overflow:'hidden'}}>
-        <Router>
-          <Routes>
-            <Route path="/chat/:chatId" element={<Chat />} />
-            <Route path="/chat-history" element={<ChatHistory user={user!} />} />
-            <Route path="/" element={<HomeScreen />} />
-            <Route path="/upgrade" element={<UpgradePage />} />
-          </Routes>
-        </Router>
-      </Container>
+      <UserProvider> {/* Обертываем все приложение в UserProvider */}
+        <Container sx={{ bgcolor: 'background.default', position:'fixed', bottom:0,left:0,width:'100%', height:'100%', overflow:'hidden'}}>
+          <Router>
+            <Routes>
+              <Route path="/chat/:chatId" element={<Chat />} />
+              <Route path="/chat-history" element={<ChatHistory/>} />
+              <Route path="/" element={<HomeScreen />} />
+              <Route path="/upgrade" element={<UpgradePage />} />
+            </Routes>
+          </Router>
+        </Container>
+      </UserProvider>
     </ThemeProvider>
   );
 };

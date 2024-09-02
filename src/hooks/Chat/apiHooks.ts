@@ -3,9 +3,17 @@ import { getMessagesFromDialog } from "../../services/dialogService";
 import User from "../../interfaces/User";
 import { Message } from "../../interfaces/Message";
 
+let cachedUser: User | null = null;
+
 export const fetchUserData = async (): Promise<User> => {
+  if (cachedUser) {
+    return cachedUser;
+  }
+
   try {
-    return await initUser();
+    const user = await initUser();
+    cachedUser = user;
+    return user;
   } catch (error) {
     console.error("Error fetching user data:", error);
     throw error;

@@ -1,9 +1,9 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { useParams } from "react-router-dom";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
-import { useUser } from '../hooks/Chat/useUser';
+import { useUser } from '../contexts/UserContext'; // Импортируйте useUser из контекста
 import { useChat } from '../hooks/Chat/useChat';
 import { useMainButton } from '../hooks/Chat/useMainButton';
 
@@ -11,9 +11,11 @@ const Chat: React.FC = () => {
   const { chatId = "" } = useParams<{ chatId: string }>();
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
-  const [formHeight, setFormHeight] = React.useState<number>(0);
+  const [formHeight, setFormHeight] = useState<number>(0);
 
-  const user = useUser();
+  // Использование контекста для получения данных пользователя
+  const { user, loading, error } = useUser(); // Получаем user, loading и error из контекста
+
   const { messages, isLoading, handleSubmit, setLoading } = useChat(chatId, user!);
 
   // Инициализация mainButton только на странице чата
@@ -26,6 +28,18 @@ const Chat: React.FC = () => {
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  if (loading) {
+    return <div>Loading user data...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading user data: {error}</div>;
+  }
+
+  if (!user) {
+    return <div>User data is not available.</div>;
+  }
 
   return (
     <Box sx={{ height: '100%', maxHeight: '100%' }}>

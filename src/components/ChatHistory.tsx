@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -18,9 +19,9 @@ import ModalWindow from "./ModalWindow";
 import gptIcon from "../assets/images/chatgpt-6.svg";
 import mistralIcon from "../assets/images/mistral-ai-icon-seeklogo.svg";
 import { useNavigate } from "react-router-dom";
-import User from '../interfaces/User';
-// import { initUser } from "../services/userService";
-// initUser()
+import { useUser } from '../contexts/UserContext'; // Обновляем импорт
+import { initMainButton } from "@telegram-apps/sdk";
+const [mainButton] = initMainButton(); 
 const sanitizeInput = (input: string): string => {
   return input.replace(/<\/?[^>]+>/gi, "");
 };
@@ -39,8 +40,8 @@ const formatDate = (dateString: string | null): string => {
   });
 };
 
-const ChatHistory: React.FC<{ user: User }> = ({ user }) => {
-  // const [isButtonVisible, setIsButtonVisible] = useState<boolean>(true);
+const ChatHistory: React.FC = () => {
+  const { user } = useUser(); // Получаем пользователя из контекста
 
   const [chatHistory, setChatHistory] = useState<Chat[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -51,11 +52,11 @@ const ChatHistory: React.FC<{ user: User }> = ({ user }) => {
   const [currentChatId, setCurrentChatId] = useState<number | null>(null);
   const navigate = useNavigate();
 
+  mainButton.hide()
   useEffect(() => {
     const fetchChatHistory = async () => {
-      // setIsButtonVisible(false);
-      
-
+      if (!user) return; // Если пользователь не загружен, не загружаем историю чатов
+          
       try {
         const chats = await getChatHistory(user.user_id);
         setChatHistory(chats);
@@ -66,7 +67,7 @@ const ChatHistory: React.FC<{ user: User }> = ({ user }) => {
     };
 
     fetchChatHistory();
-  }, [user.user_id]);
+  }, [user]);
 
   const handleDeleteChat = async (dialog_id: number) => {
     try {
