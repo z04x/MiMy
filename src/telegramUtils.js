@@ -1,5 +1,4 @@
 import { initBackButton } from '@telegram-apps/sdk';
-import { BASE_URL } from './services/api';
 
 export const initTelegram = async () => {
   // Проверка доступности Telegram WebApp

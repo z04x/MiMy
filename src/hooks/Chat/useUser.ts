@@ -9,6 +9,7 @@ export const useUser = () => {
     const fetchUser = async () => {
       try {
         const fetchedUser = await fetchUserData();
+        console.log(fetchedUser);
         setUser(fetchedUser);
       } catch (error) {
         console.error("Error fetching user data:", error);
