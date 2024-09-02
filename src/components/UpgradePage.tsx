@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Box, Typography, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { initMainButton } from '@telegram-apps/sdk';
+import React, { useEffect, useState, useCallback } from "react";
+import { Box, Typography, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { initMainButton } from "@telegram-apps/sdk";
+
+const [mainButton] = initMainButton();
 
 const UpgradePage: React.FC = () => {
-  const [mainButton, setMainButton] = useState<any>(null);
   const navigate = useNavigate();
 
   const handlePurchaseClick = useCallback(() => {
@@ -15,20 +16,17 @@ const UpgradePage: React.FC = () => {
   useEffect(() => {
     const initMainButtonAsync = async () => {
       try {
-        const [button] = await initMainButton();
-        console.log('MainButton:', button); // Логируем свойства кнопки для отладки
-        if (button) {
-          button.setParams({
+        console.log("MainButton:", mainButton); // Логируем свойства кнопки для отладки
+        if (mainButton) {
+          mainButton.setParams({
             text: "Upgrade to Professional",
             isVisible: true,
           });
-          button.setBgColor('#088C5D');
-          button.on('click', handlePurchaseClick); // Убедитесь, что метод on существует
-
-          setMainButton(button);
+          mainButton.setBgColor("#088C5D");
+          mainButton.on("click", handlePurchaseClick); // Убедитесь, что метод on существует
         }
       } catch (error) {
-        console.error('Error initializing main button:', error);
+        console.error("Error initializing main button:", error);
       }
     };
 
@@ -36,10 +34,10 @@ const UpgradePage: React.FC = () => {
 
     return () => {
       if (mainButton) {
-        if (typeof mainButton.off === 'function') {
-          mainButton.off('click', handlePurchaseClick); // Убедитесь, что метод off существует
+        if (typeof mainButton.off === "function") {
+          mainButton.off("click", handlePurchaseClick); // Убедитесь, что метод off существует
         }
-        if (typeof mainButton.hide === 'function') {
+        if (typeof mainButton.hide === "function") {
           mainButton.hide(); // Убедитесь, что метод hide существует
         }
       }
@@ -50,30 +48,30 @@ const UpgradePage: React.FC = () => {
     const backButton = window.Telegram?.WebApp?.BackButton;
 
     if (backButton) {
-      console.log('BackButton:', backButton); // Логируем свойства кнопки для отладки
-      if (typeof backButton.on === 'function') {
+      console.log("BackButton:", backButton); // Логируем свойства кнопки для отладки
+      if (typeof backButton.on === "function") {
         const handleBackButtonClick = () => {
           if (mainButton) {
-            if (typeof mainButton.hide === 'function') {
+            if (typeof mainButton.hide === "function") {
               mainButton.hide(); // Скрываем mainButton при клике на backButton
             }
           }
         };
 
-        backButton.on('click', handleBackButtonClick);
+        backButton.on("click", handleBackButtonClick);
 
         return () => {
-          if (typeof backButton.off === 'function') {
-            backButton.off('click', handleBackButtonClick);
+          if (typeof backButton.off === "function") {
+            backButton.off("click", handleBackButtonClick);
           }
         };
       } else {
-        console.error('BackButton does not support on method');
+        console.error("BackButton does not support on method");
       }
     } else {
-      console.error('BackButton is not available');
+      console.error("BackButton is not available");
     }
-  }, [mainButton]);
+  }, []);
 
   return (
     <Box
@@ -91,8 +89,9 @@ const UpgradePage: React.FC = () => {
         Upgrade to Premium
       </Typography>
       <Typography variant="body1" sx={{ mb: 4 }}>
-        Для доступа к этому функционалу вам необходимо оформить подписку на премиум-версию.
-        Подписка дает доступ к эксклюзивным функциям и улучшенному обслуживанию.
+        Для доступа к этому функционалу вам необходимо оформить подписку на
+        премиум-версию. Подписка дает доступ к эксклюзивным функциям и
+        улучшенному обслуживанию.
       </Typography>
       <Button variant="contained" color="primary" onClick={handlePurchaseClick}>
         Купить Премиум
