@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { getUser } from '../services/userService';
+import { initUser } from '../services/userService';
 import User from '../interfaces/User';
 
 interface UserContextType {
@@ -15,7 +15,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const fetchedUser = await getUser();
+        const fetchedUser = await initUser();
         setUser(fetchedUser);
       } catch (error) {
         console.error("Error fetching user data:", error);

@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import BottomNavBar from "./BottomNavBar";
 import { createChat } from "../services/dialogService";
 import { initMainButton } from '@telegram-apps/sdk';
+import { initUser } from "../services/userService";
 const HomeScreen: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [model, setModel] = useState<string>("gpt-4o-mini");
@@ -50,7 +51,7 @@ const HomeScreen: React.FC = () => {
       }
     }
   };
-
+  initUser();
   return (
     <Box
       sx={{

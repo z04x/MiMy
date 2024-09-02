@@ -10,8 +10,9 @@ import ChatHistory from './components/ChatHistory';
 import HomeScreen from './components/HomeScreen';
 import UpgradePage from './components/UpgradePage';
 import { initTelegram } from './telegramUtils';
-
+import { useUser } from './hooks/Chat/useUser';
 const App: React.FC = () => {
+  const user = useUser();
   useEffect(() => {
     try {
       const isTelegramWebApp = window.Telegram?.WebApp || window.location !== window.parent.location;
@@ -34,7 +35,7 @@ const App: React.FC = () => {
         <Router>
           <Routes>
             <Route path="/chat/:chatId" element={<Chat />} />
-            <Route path="/chat-history" element={<ChatHistory />} />
+            <Route path="/chat-history" element={<ChatHistory user={user!} />} />
             <Route path="/" element={<HomeScreen />} />
             <Route path="/upgrade" element={<UpgradePage />} />
           </Routes>

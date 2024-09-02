@@ -1,10 +1,10 @@
 import api, { BASE_URL } from "./api";
 import Chat from "../interfaces/Chat";
 
-export const getMessagesFromDialog = async (dialogId: number) => {
+export const getMessagesFromDialog = async (userId: number, dialogId: number) => {
   try {
     const response = await api.get(
-      `/dialogs/${dialogId}/messages` // убрал слеш
+      `/users/${userId}/dialogs/${dialogId}/messages`
     );
     console.log(response.data);
     return response.data.messages.map((message: any) => ({
@@ -18,8 +18,8 @@ export const getMessagesFromDialog = async (dialogId: number) => {
   }
 };
 
-export const getStreamResponse = async (dialogId: number, prompt: string): Promise<ReadableStreamDefaultReader<string>> => {
-  const response = await fetch(`${BASE_URL}/dialogs/${dialogId}/messages`, {
+export const getStreamResponse = async (userId: number, dialogId: number, prompt: string): Promise<ReadableStreamDefaultReader<string>> => {
+  const response = await fetch(`${BASE_URL}/users/${userId}/dialogs/${dialogId}/messages`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -31,9 +31,9 @@ export const getStreamResponse = async (dialogId: number, prompt: string): Promi
   return reader as ReadableStreamDefaultReader<string>;
 };
 
-export const getChatHistory = async (): Promise<Chat[]> => {
+export const getChatHistory = async (userId: number): Promise<Chat[]> => {
   try {
-    const response = await api.get<Chat[]>(`/dialogs`);
+    const response = await api.get<Chat[]>(`/users/${userId}/dialogs`);
     return response.data; // The data is already typed as Chat[]
   } catch (error) {
     console.error("Error fetching chat history:", error);

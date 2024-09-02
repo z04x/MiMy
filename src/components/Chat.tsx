@@ -14,7 +14,7 @@ const Chat: React.FC = () => {
   const [formHeight, setFormHeight] = React.useState<number>(0);
 
   const user = useUser();
-  const { messages, isLoading, handleSubmit, setLoading } = useChat(chatId, user);
+  const { messages, isLoading, handleSubmit, setLoading } = useChat(chatId, user!);
 
   // Инициализация mainButton только на странице чата
   const mainButton = useMainButton(() => {

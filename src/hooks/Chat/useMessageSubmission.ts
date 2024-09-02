@@ -39,7 +39,7 @@ export const useMessageSubmission = (chatId: string, user: User | null, setMessa
                     text: null,
                     isUser: false,
                     isLoading: true,
-                    readPromptResponse: getStreamResponse(dialogId, prompt),
+                    readPromptResponse: getStreamResponse(user.user_id, dialogId, prompt,),
                 };
 
             setMessages(prevMessages => {

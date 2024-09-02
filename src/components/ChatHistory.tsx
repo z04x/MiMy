@@ -18,7 +18,9 @@ import ModalWindow from "./ModalWindow";
 import gptIcon from "../assets/images/chatgpt-6.svg";
 import mistralIcon from "../assets/images/mistral-ai-icon-seeklogo.svg";
 import { useNavigate } from "react-router-dom";
-
+import User from '../interfaces/User';
+// import { initUser } from "../services/userService";
+// initUser()
 const sanitizeInput = (input: string): string => {
   return input.replace(/<\/?[^>]+>/gi, "");
 };
@@ -37,7 +39,7 @@ const formatDate = (dateString: string | null): string => {
   });
 };
 
-const ChatHistory: React.FC = () => {
+const ChatHistory: React.FC<{ user: User }> = ({ user }) => {
   // const [isButtonVisible, setIsButtonVisible] = useState<boolean>(true);
 
   const [chatHistory, setChatHistory] = useState<Chat[]>([]);
@@ -52,8 +54,10 @@ const ChatHistory: React.FC = () => {
   useEffect(() => {
     const fetchChatHistory = async () => {
       // setIsButtonVisible(false);
+      
+
       try {
-        const chats = await getChatHistory();
+        const chats = await getChatHistory(user.user_id);
         setChatHistory(chats);
         setLoading(false);
       } catch (error) {
@@ -62,7 +66,7 @@ const ChatHistory: React.FC = () => {
     };
 
     fetchChatHistory();
-  }, []);
+  }, [user.user_id]);
 
   const handleDeleteChat = async (dialog_id: number) => {
     try {
