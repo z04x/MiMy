@@ -69,6 +69,8 @@ const ChatHistory: React.FC = () => {
       const success = await deleteChat(user.user_id, dialog_id);
       if (success) {
         console.log("Сервер сообщил об успешном удалении чата");
+        // Добавляем небольшую задержку
+        await new Promise(resolve => setTimeout(resolve, 500));
         const updatedChats = await getChatsByUserId(user.user_id);
         console.log("Полученный список чатов:", updatedChats);
         

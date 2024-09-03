@@ -71,8 +71,7 @@ export const createChat = async (userId: number, model: string) => {
 
 export const getChatsByUserId = async (userId: number): Promise<Chat[]> => {
   try {
-    const timestamp = new Date().getTime();
-    const response = await api.get(`/users/${userId}/dialogs?_=${timestamp}`);
+    const response = await api.get(`/users/${userId}/dialogs`);
     return response.data;
   } catch (error) {
     console.error("Ошибка при получении диалогов пользователя:", error);
