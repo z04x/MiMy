@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -6,29 +5,24 @@ import {
   IconButton,
   Avatar,
   TextField,
-  Menu,
-  MenuItem,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import BottomNavBar from "./BottomNavBar";
-import { getChatHistory, deleteChat, renameChat } from "../services/dialogService";
+import { getChatHistory, deleteChat, renameChat, getChatsByUserId } from "../services/dialogService";
 import Chat from "../interfaces/Chat";
-import ModalWindow from "./ModalWindow";
 import gptIcon from "../assets/images/chatgpt-6.svg";
 import mistralIcon from "../assets/images/mistral-ai-icon-seeklogo.svg";
 import { useNavigate } from "react-router-dom";
 import { useUser } from '../contexts/UserContext'; // Обновляем импорт
 import { initMainButton } from "@telegram-apps/sdk";
 const [mainButton] = initMainButton(); 
-const sanitizeInput = (input: string): string => {
-  return input.replace(/<\/?[^>]+>/gi, "");
-};
-
-const validateInput = (input: string): boolean => {
-  return input.trim().length > 0;
-};
+mainButton.hide();
 
 const formatDate = (dateString: string | null): string => {
   if (!dateString) return "No updates";
@@ -41,27 +35,24 @@ const formatDate = (dateString: string | null): string => {
 };
 
 const ChatHistory: React.FC = () => {
-  const { user } = useUser(); // Получаем пользователя из контекста
-
+  const { user } = useUser();
   const [chatHistory, setChatHistory] = useState<Chat[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [renameDialogOpen, setRenameDialogOpen] = useState<boolean>(false);
-  const [newTitle, setNewTitle] = useState<string>("");
-  const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [currentChatId, setCurrentChatId] = useState<number | null>(null);
   const navigate = useNavigate();
+  const [openRenameDialog, setOpenRenameDialog] = useState(false);
+  const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+  const [newTitle, setNewTitle] = useState("");
 
-  mainButton.hide()
   useEffect(() => {
     const fetchChatHistory = async () => {
-      if (!user) return; // Если пользователь не загружен, не загружаем историю чатов
-          
+      if (!user) return;
+      
       try {
         const chats = await getChatHistory(user.user_id);
         setChatHistory(chats);
         setLoading(false);
       } catch (error) {
+        console.error("Error fetching chat history:", error);
         setLoading(false);
       }
     };
@@ -71,60 +62,35 @@ const ChatHistory: React.FC = () => {
 
   const handleDeleteChat = async (dialog_id: number) => {
     try {
-      await deleteChat(user!.user_id, dialog_id);
-      setChatHistory((prevChats) =>
-        prevChats.filter((chat) => chat.dialog_id !== dialog_id)
-      );
+      if (!user) {
+        console.error("Пользователь не авторизован");
+        return;
+      }
+      const success = await deleteChat(user.user_id, dialog_id);
+      if (success) {
+        console.log("Сервер сообщил об успешном удалении чата");
+        // Добавляем небольшую задержку
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const updatedChats = await getChatsByUserId(user.user_id);
+        console.log("Полученный список чатов:", updatedChats);
+        
+        const chatStillExists = updatedChats.some(chat => chat.dialog_id === dialog_id);
+        if (chatStillExists) {
+          console.error("Чат все еще присутствует в списке после удаления. ID чата:", dialog_id);
+        } else {
+          console.log("Чат успешно удален из списка");
+          setChatHistory(updatedChats);
+        }
+        
+        // Проверка состояния после обновления
+        setTimeout(() => {
+          console.log("Текущее состояние chatHistory:", chatHistory);
+        }, 0);
+      } else {
+        console.error("Сервер сообщил о неудачном удалении чата");
+      }
     } catch (error) {
-      console.error("Error deleting chat:", error);
-    }
-  };
-
-  const handleOpenRenameDialog = (chat: Chat) => {
-    setSelectedChatId(chat.dialog_id);
-    setNewTitle(chat.title || `Chat ${chat.dialog_id}`);
-    setRenameDialogOpen(true);
-  };
-
-  const handleRenameChat = async () => {
-    if (selectedChatId === null || !validateInput(newTitle)) {
-      console.error("No chat selected or new title is empty.");
-      return;
-    }
-
-    try {
-      const sanitizedTitle = sanitizeInput(newTitle.trim());
-      await renameChat(selectedChatId, sanitizedTitle);
-      setChatHistory((prevChats) =>
-        prevChats.map((chat) =>
-          chat.dialog_id === selectedChatId ? { ...chat, title: sanitizedTitle } : chat
-        )
-      );
-      handleCloseRenameDialog();
-    } catch (error) {
-      console.error("Error renaming chat:", error);
-    }
-  };
-
-  const handleCloseRenameDialog = () => {
-    setRenameDialogOpen(false);
-    setNewTitle("");
-  };
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, chatId: number) => {
-    setAnchorEl(event.currentTarget);
-    setCurrentChatId(chatId);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setCurrentChatId(null);
-  };
-
-  const handleDeleteFromMenu = () => {
-    if (currentChatId !== null) {
-      handleDeleteChat(currentChatId);
-      handleMenuClose();
+      console.error("Ошибка при удалении чата:", error);
     }
   };
 
@@ -150,6 +116,34 @@ const ChatHistory: React.FC = () => {
     }
   };
 
+  const handleRenameClick = (chat: Chat) => {
+    setSelectedChat(chat);
+    setNewTitle(chat.title || `Chat ${chat.dialog_id}`);
+    setOpenRenameDialog(true);
+  };
+
+  const handleRenameClose = () => {
+    setOpenRenameDialog(false);
+    setSelectedChat(null);
+    setNewTitle("");
+  };
+
+  const handleRenameSubmit = async () => {
+    if (selectedChat && user) {
+      try {
+        const updatedChat = await renameChat(user.user_id, selectedChat.dialog_id, newTitle);
+        setChatHistory((prevChats) =>
+          prevChats.map((chat) =>
+            chat.dialog_id === updatedChat.dialog_id ? updatedChat : chat
+          )
+        );
+        handleRenameClose();
+      } catch (error) {
+        console.error("Ошибка при переименовании чата:", error);
+      }
+    }
+  };
+
   return (
     <Box sx={{ display: "flex", height: "100vh", flexDirection: "column", alignItems: "center", width: "100%", pb:'62px'}}>
       <Typography variant="h4" component="div" sx={{ mb: 4, color: '#fff' }}>
@@ -162,37 +156,42 @@ const ChatHistory: React.FC = () => {
           {chatHistory.map((chat) => (
             <Box
               key={chat.dialog_id}
-              sx={{ display: "flex", alignItems: "center", mb: '12px', bgcolor: 'background.paper', width: "100%", p: '32px 12px', borderRadius: '16px', cursor: 'pointer' }}
+              sx={{ display: "flex", alignItems: "center", mb: '12px', bgcolor: 'background.paper', width: "100%", p: '0px 12px', borderRadius: '16px', cursor: 'pointer' }}
               onClick={() => handleChatClick(chat.dialog_id)}
             >
               {getModelAvatar(chat.model)}
-              <Box sx={{ flexGrow: 1, p: 0, m: 0 }}>
-                <Typography sx={{ color: '#fff', fontWeight: '400', lineHeight: '22px' }} variant="h6">{chat.title || `Chat ${chat.dialog_id}`}</Typography>
+              <Box sx={{ flexGrow: 1, p: 0, m: 0, height:'56px', display:'flex', flexDirection:'column', justifyContent:'center' }}>
+                <Typography sx={{ color: '#fff', fontWeight: '400', lineHeight: '22px' }} variant="h6">
+                  {(chat.title || `Chat ${chat.dialog_id}`)
+                    .replace(/(Input prompt|Chat Title):/gi, '')
+                    .trim()
+                    .split(' ')
+                    .slice(0, 5)
+                    .join(' ')}
+                  {(chat.title || `Chat ${chat.dialog_id}`).split(' ').length > 5 ? '...' : ''}
+                </Typography>
                 <Typography variant="body2" color="#B3B4B4">
                   Last updated: {formatDate(chat.updated_at)}
                 </Typography>
               </Box>
               <IconButton
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent triggering chat navigation when opening the menu
-                  handleMenuOpen(e, chat.dialog_id);
+                  e.stopPropagation();
+                  handleRenameClick(chat);
                 }}
-                color="secondary"
+                sx={{ color: '#fff', mr: 1 }}
               >
-                <MoreVertIcon />
+                <EditIcon />
               </IconButton>
-              <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteChat(chat.dialog_id);
+                }}
+                sx={{ color: '#fff' }}
               >
-                <MenuItem onClick={(e) => { e.stopPropagation(); handleMenuClose(); handleOpenRenameDialog(chat); }}>
-                  <EditIcon sx={{ mr: 1 }} /> Rename Chat
-                </MenuItem>
-                <MenuItem onClick={(e) => { e.stopPropagation(); handleDeleteFromMenu(); }}>
-                  <DeleteIcon sx={{ mr: 1 }} /> Delete Chat
-                </MenuItem>
-              </Menu>
+                <DeleteIcon />
+              </IconButton>
             </Box>
           ))}
         </Box>
@@ -200,21 +199,24 @@ const ChatHistory: React.FC = () => {
         <Typography variant="body1">No chat history available</Typography>
       )}
 
-      <ModalWindow
-        open={renameDialogOpen}
-        onClose={handleCloseRenameDialog}
-        title="Rename the chat"
-        onSave={handleRenameChat}
-      >
-        <TextField
-          fullWidth
-          variant="outlined"
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-          autoFocus
-          InputProps={{}}
-        />
-      </ModalWindow>
+      <Dialog open={openRenameDialog} onClose={handleRenameClose}>
+        <DialogTitle>Переименовать чат</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Новое название"
+            type="text"
+            fullWidth
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleRenameClose}>Отмена</Button>
+          <Button onClick={handleRenameSubmit}>Переименовать</Button>
+        </DialogActions>
+      </Dialog>
 
       <BottomNavBar current="/history" />
     </Box>

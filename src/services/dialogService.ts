@@ -1,6 +1,6 @@
 import api, { BASE_URL } from "./api";
 import Chat from "../interfaces/Chat";
-
+import axios from "axios";
 export const getMessagesFromDialog = async (userId: number, dialogId: number) => {
   try {
     const response = await api.get(
@@ -41,13 +41,19 @@ export const getChatHistory = async (userId: number): Promise<Chat[]> => {
   }
 };
 
-export const deleteChat = async (userId: number, dialog_id: number) => {
+export const deleteChat = async (userId: number, dialog_id: number): Promise<boolean> => {
   try {
-    const reponse = await api.delete(`/users/${userId}/dialogs/${dialog_id}`); // убрал слеш
-    return reponse.data;
+    const response = await api.delete(`/users/${userId}/dialogs/${dialog_id}`);
+    console.log("Полный ответ сервера при удалении:", JSON.stringify(response, null, 2));
+    if (response.status === 200 && response.data && response.data.success) {
+      return true;
+    } else {
+      console.error("Сервер вернул неожиданный ответ при удалении:", response);
+      return false;
+    }
   } catch (error) {
-    console.error("Error deleting chat:", error);
-    throw error;
+    console.error("Ошибка при удалении чата:", error);
+    return false;
   }
 };
 
@@ -68,35 +74,41 @@ export const getChatsByUserId = async (userId: number): Promise<Chat[]> => {
     const response = await api.get(`/users/${userId}/dialogs`);
     return response.data;
   } catch (error) {
-    console.error("Error fetching dialogs by user ID:", error);
+    console.error("Ошибка при получении диалогов пользователя:", error);
     throw error;
   }
 };
 
-
-const sanitizeInput = (input: string): string => {
-  return input.replace(/<\/?[^>]+>/gi, ""); // Очистка от HTML тегов
-};
-
-const validateInput = (input: string): boolean => {
-  return input.trim().length > 0; // Проверка на пустоту
-};
-
-export const renameChat = async (dialogId: number, newTitle: string) => {
+export const renameChat = async (userId: number, dialogId: number, newTitle: string): Promise<Chat> => {
   try {
-    const sanitizedTitle = sanitizeInput(newTitle); // Очистка заголовка
-
-    if (!validateInput(sanitizedTitle)) {
-      throw new Error("The new title cannot be empty or contain only whitespace."); // Валидация заголовка
-    }
-
-    const response = await api.patch(`/dialogs/${dialogId}`, {
-      title: sanitizedTitle,
+    const response = await api.patch<Chat>(`/users/${userId}/dialogs/${dialogId}`, {
+      title: newTitle
     });
-
     return response.data;
   } catch (error) {
-    console.error("Error renaming chat:", error);
+    if (axios.isAxiosError(error)) {
+      console.error('Ошибка при переименовании чата:', error.message);
+      console.error('Статус ошибки:', error.response?.status);
+      console.error('Данные ошибки:', error.response?.data);
+      console.error('Конфигурация запроса:', error.config);
+    } else {
+      console.error('Неизвестная ошибка при переименовании чата:', error);
+    }
     throw error;
   }
+};
+
+export const getChatInfo = async (userId: number, dialogId: number): Promise<Chat> => {
+  const response = await fetch(`/chats/${userId}/${dialogId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch chat info');
+  }
+
+  return response.json();
 };
