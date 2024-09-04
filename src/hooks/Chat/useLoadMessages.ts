@@ -3,7 +3,7 @@ import { loadMessages } from './apiHooks';
 import { Message } from '../../interfaces/Message';
 import User from '../../interfaces/User';
 
-export const useLoadMessages = (chatId: string, user: User) => {
+export const useLoadMessages = (chatId: string, user: User | null) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -12,7 +12,7 @@ export const useLoadMessages = (chatId: string, user: User) => {
       if (chatId) {
         try {
           const numericChatId = parseInt(chatId, 10);
-          const response = await loadMessages(user.user_id, numericChatId);
+          const response = await loadMessages(user!.user_id, numericChatId);
           setMessages(response.reverse());
         } catch (error) {
           console.error("Error fetching messages:", error);
@@ -23,7 +23,7 @@ export const useLoadMessages = (chatId: string, user: User) => {
     };
 
     loadMsgs();
-  }, [chatId, user.user_id]);
+  }, [chatId, user]);
 
   return { messages, isLoading, setMessages, setIsLoading };
 };
