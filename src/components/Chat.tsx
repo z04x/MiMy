@@ -3,9 +3,10 @@ import { Box } from "@mui/material";
 import { useParams } from "react-router-dom";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
-import { useUser } from '../contexts/UserContext'; // Импортируйте useUser из контекста
+import { useUser } from '../contexts/UserContext'; 
 import { useChat } from '../hooks/Chat/useChat';
 import { useMainButton } from '../hooks/Chat/useMainButton';
+
 const CHAT_STYLES = {
   container: { height: '100%', maxHeight: '100%', overflow: 'hidden' },
   innerContainer: { display: "flex", flexDirection: "column", width: '100%' },
@@ -36,12 +37,11 @@ const Chat: React.FC = () => {
   const [formHeight, setFormHeight] = useState<number>(0);
   const [inputValue, setInputValue] = useState("");
 
-  // Использование контекста для получения данных пользователя
-  const { user, loading } = useUser(); // Убираем error из деструктуризации
+  const { user, loading } = useUser();
 
+  // Используем useChat только если пользователь загружен
   const { messages, isLoading, handleSubmit, setLoading } = useChat(chatId, user!);
 
-  // Инициализация mainButton только на странице чата
   const { setClickHandler, setEnabled } = useMainButton();
 
   const handleInputChange = useCallback((value: string) => {

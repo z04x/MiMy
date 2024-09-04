@@ -9,16 +9,21 @@ export const useLoadMessages = (chatId: string, user: User | null) => {
 
   useEffect(() => {
     const loadMsgs = async () => {
-      if (chatId) {
-        try {
-          const numericChatId = parseInt(chatId, 10);
-          const response = await loadMessages(user!.user_id, numericChatId);
-          setMessages(response.reverse());
-        } catch (error) {
-          console.error("Error fetching messages:", error);
-        } finally {
-          setIsLoading(false);
-        }
+      if (!chatId || !user) {
+        // Если chatId или user не заданы, не выполняем запрос
+        return;
+      }
+      
+      setIsLoading(true); // Устанавливаем загрузку в true перед началом загрузки
+
+      try {
+        const numericChatId = parseInt(chatId, 10);
+        const response = await loadMessages(user.user_id, numericChatId);
+        setMessages(response.reverse());
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      } finally {
+        setIsLoading(false); // Устанавливаем загрузку в false после завершения
       }
     };
 
