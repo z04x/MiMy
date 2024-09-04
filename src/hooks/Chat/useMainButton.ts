@@ -15,6 +15,7 @@ export const useMainButton = (handleClick: () => void) => {
 
     return () => {
       mainButton.off("click", handleClick);
+      mainButton.hide();
     };
   }, [handleClick]);
   
