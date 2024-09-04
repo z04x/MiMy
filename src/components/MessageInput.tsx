@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
-import { TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 import useResizeObserver from "../hooks/MessageInput/useResizeObserver";
-
+// import { TextareaAutosize } from '@mui/base/TextareaAutosize';
 interface MessageInputProps {
   isLoading: boolean;
   onHeightChange: (height: number) => void;
@@ -20,26 +20,32 @@ const MessageInput = forwardRef<HTMLTextAreaElement, MessageInputProps>(
     });
 
     return (
-      <form
+      <Box
         ref={formRef}
-        style={{ display: "flex", alignItems: "center" }}
+        sx={{ display: "flex", alignItems: "center", height: '100%', width: '100%'}}
       >
         <TextField
           multiline
+          fullWidth
+          minRows={1}
           maxRows={5}
           inputRef={ref}
           value={value}
+          variant="outlined"
           onChange={(e) => onChange(e.target.value)}
           placeholder="Type a message..."
           InputProps={{
             style: {
-              padding: "auto 15px",
-              borderRadius: "26px",
+              flexGrow: 1, 
+              marginRight: '10px',              
+              padding: 'auto 15px',
+              marginBottom:'6px',
+              borderRadius: '16px',
+              border: '1px solid #383939',
             },
           }}
-          sx={{ flexGrow: 1, marginRight: "10px" }}
         />
-      </form>
+      </Box>
     );
   }
 );

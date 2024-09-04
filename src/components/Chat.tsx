@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { Box } from "@mui/material";
 import { useParams } from "react-router-dom";
 import MessageList from "./MessageList";
@@ -6,6 +6,28 @@ import MessageInput from "./MessageInput";
 import { useUser } from '../contexts/UserContext'; // Импортируйте useUser из контекста
 import { useChat } from '../hooks/Chat/useChat';
 import { useMainButton } from '../hooks/Chat/useMainButton';
+const CHAT_STYLES = {
+  container: { height: '100%', maxHeight: '100%', overflow: 'hidden' },
+  innerContainer: { display: "flex", flexDirection: "column", width: '100%' },
+  messageListContainer: {
+    flexGrow: 1,
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    height: '100%',
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+  },
+  messageInputContainer: {
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    pl: 1,
+    pr: 1,
+    width:'100%',
+  }
+};
 
 const Chat: React.FC = () => {
   const { chatId = "" } = useParams<{ chatId: string }>();
@@ -15,21 +37,25 @@ const Chat: React.FC = () => {
   const [inputValue, setInputValue] = useState("");
 
   // Использование контекста для получения данных пользователя
-  const { user, loading, error } = useUser(); // Получаем user, loading и error из контекста
+  const { user, loading } = useUser(); // Убираем error из деструктуризации
 
   const { messages, isLoading, handleSubmit, setLoading } = useChat(chatId, user!);
 
   // Инициализация mainButton только на странице чата
   const { setClickHandler, setEnabled } = useMainButton();
 
-  const handleInputChange = (value: string) => {
+  const handleInputChange = useCallback((value: string) => {
     setInputValue(value);
-  };
+  }, []);
 
-  const handleMainButtonClick = useCallback(() => {
+  const handleMainButtonClick = useCallback(async () => {
     if (inputValue.trim()) {
-      handleSubmit(inputValue);
-      setInputValue(""); // Очищаем значение после отправки
+      try {
+        await handleSubmit(inputValue);
+        setInputValue("");
+      } catch (error) {
+        console.error("Ошибка при отправке сообщения:", error);
+      }
     }
   }, [inputValue, handleSubmit]);
 
@@ -42,55 +68,53 @@ const Chat: React.FC = () => {
   }, [inputValue, setEnabled]);
 
   useEffect(() => {
-    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length > 0) {
+      const timer = setTimeout(() => {
+        endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
   }, [messages]);
 
-  if (loading) {
-    return <div>Loading user data...</div>;
-  }
+  const memoizedMessageList = useMemo(() => (
+    <MessageList
+      messages={messages}
+      endOfMessagesRef={endOfMessagesRef}
+      setLoading={setLoading}
+    />
+  ), [messages, endOfMessagesRef, setLoading]);
 
-  if (error) {
-    return <div>Error loading user data: {error}</div>;
-  }
-
-  if (!user) {
-    return <div>User data is not available.</div>;
-  }
+  const memoizedMessageInput = useMemo(() => (
+    <MessageInput
+      ref={messageInputRef}
+      isLoading={isLoading}
+      onHeightChange={setFormHeight}
+      value={inputValue}
+      onChange={handleInputChange}
+    />
+  ), [isLoading, inputValue, handleInputChange]);
 
   return (
-    <Box sx={{ height: '100%', maxHeight: '100%' }}>
-      <Box sx={{ display: "flex", flexDirection: "column", overflow: 'hidden', position: 'fixed', bottom: 0, left: 0 }}>
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            height: '100%',
-            position: 'fixed',
-            overflow: 'hidden',
-            bottom: 0,
-            left: 0,
-            pb: `${formHeight}px`,
-          }}
-        >
-          <MessageList
-            messages={messages}
-            endOfMessagesRef={endOfMessagesRef}
-            setLoading={setLoading}
-          />
+    <>
+      {loading && <div>Загрузка...</div>}
+      {!loading && user && (
+        <Box sx={CHAT_STYLES.container}>
+          <Box sx={CHAT_STYLES.innerContainer}>
+            <Box
+              sx={{
+                ...CHAT_STYLES.messageListContainer,
+                pb: `${formHeight}px`,
+              }}
+            >
+              {memoizedMessageList}
+            </Box>
+            <Box sx={CHAT_STYLES.messageInputContainer}>
+              {memoizedMessageInput}
+            </Box>
+          </Box>
         </Box>
-        <Box sx={{ position: 'fixed', bottom: 0, left: 0, width: '100%', pl: 1, pr: 1 }}>
-          <MessageInput
-            ref={messageInputRef}
-            isLoading={isLoading}
-            onHeightChange={setFormHeight}
-            value={inputValue}
-            onChange={handleInputChange}
-          />
-        </Box>
-      </Box>
-    </Box>
+      )}
+    </>
   );
 };
 

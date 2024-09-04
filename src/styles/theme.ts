@@ -39,19 +39,26 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
-            borderRadius: '36px',
-            border: '1px solid #383939',
+            borderRadius: '8px',
+            border: 'none',
             backgroundColor: '#171A19',
+            overflowY: 'auto',  // Ensures scrolling when content overflows 
+            height: '100%',
             color: '#fff',
             '& fieldset': {
-              border: '1px solid #383939',
+              border: 'none',
             },
             '&:hover fieldset': {
-              border: '1px solid #383939',
+              border: 'none',
             },
             '&.Mui-focused fieldset': {
-              border: '1px solid #383939',
+              border: 'none',
             },
+             '& .MuiInputBase-input': {  // Targeting the textarea for multiline
+          maxHeight: '150px',        // Max height to enable scrolling
+          overflowY: 'auto',         // Enable vertical scrolling
+          boxSizing: 'border-box',   // Ensures proper box sizing
+        },
           },
         },
       },

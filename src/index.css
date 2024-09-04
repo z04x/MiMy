@@ -52,8 +52,6 @@ html {
   -moz-text-size-adjust: none;
   -webkit-text-size-adjust: none;
   margin: 0; /* Удаляет любые отступы */
-  overflow: hidden;
-
 }
 
 /* Remove default margin in favour of better control in authored CSS */
@@ -70,7 +68,9 @@ ol[role='list'] {
 
 /* Set core body defaults */
 body {
-  overflow: hidden;
+  position: fixed;
+  bottom: 0;
+  left: 0;
 }
 
 /* Set shorter line heights on headings and interactive elements */

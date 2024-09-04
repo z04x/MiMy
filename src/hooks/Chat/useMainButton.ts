@@ -24,7 +24,7 @@ export const useMainButton = () => {
     };
 
     mainButton.on("click", clickHandler);
-
+    console.log('mainButton', mainButton);
     return () => {
       mainButton.off("click", clickHandler);
       mainButton.hide();
