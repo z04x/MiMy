@@ -116,7 +116,7 @@ const theme = createTheme({
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',
-            backgroundColor: '#FFFFFF0F',
+            backgroundColor: '#0AA66E',
             '&::before': {
               content: '""',
               position: 'absolute',
