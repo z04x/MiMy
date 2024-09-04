@@ -161,7 +161,7 @@ const HomeScreen: React.FC = () => {
             variant="contained"
             color="primary"
             fullWidth
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, bgcolor:'#000'}}
             disabled={loading}
           >
             {loading ? "Создание..." : "Создать чат"}

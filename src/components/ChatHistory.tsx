@@ -27,18 +27,27 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from '../contexts/UserContext'; 
 import { initMainButton } from "@telegram-apps/sdk";
 import CloseIcon from '@mui/icons-material/Close';
-
+import moment from 'moment-timezone';
 const [mainButton] = initMainButton(); 
 mainButton.hide();
 
+
+
 const formatDate = (dateString: string | null): string => {
-  if (!dateString) return "No updates";
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  if (!dateString) return "Нет обновлений";
+
+  // Создаем объект Moment из строки в формате UTC
+  const utcDate = moment.utc(dateString);
+
+  // Получаем часовой пояс пользователя
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  console.log("Local TimeZone:", timeZone);
+
+  // Форматируем дату и время с учетом часового пояса
+  const formattedDate = utcDate.tz(timeZone).format('MMM D, HH:mm');
+  console.log("Formatted Date:", formattedDate);
+
+  return formattedDate;
 };
 
 const ChatHistory: React.FC = () => {
@@ -147,7 +156,6 @@ const ChatHistory: React.FC = () => {
       }
     }
   };
-
   return (
     <Box sx={{ display: "flex", height: "100vh", flexDirection: "column", alignItems: "center", width: "100%", pb:'62px', position:'relative'}}>
       <Typography variant="h4" component="div" sx={{ mb: 4, color: '#fff' }}>
@@ -158,6 +166,7 @@ const ChatHistory: React.FC = () => {
       ) : chatHistory.length > 0 ? (
         <Box sx={{ display: "flex", flexDirection: 'column', width: "100%", overflowY:'auto',  height: "100%"}}>
           {chatHistory.map((chat) => (
+      
             <Box
               key={chat.dialog_id}
               sx={{ display: "flex", alignItems: "center", mb: '12px', bgcolor: 'background.paper', width: "100%", p: '0px 12px', borderRadius: '16px', cursor: 'pointer' }}
@@ -176,6 +185,7 @@ const ChatHistory: React.FC = () => {
                 </Typography>
                 <Typography variant="body2" color="#B3B4B4">
                   Last updated: {formatDate(chat.updated_at)}
+                  
                 </Typography>
               </Box>
               <IconButton
