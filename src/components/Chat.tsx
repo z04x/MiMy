@@ -20,6 +20,8 @@ const Chat: React.FC = () => {
   const { messages, isLoading, handleSubmit, setLoading } = useChat(chatId, user!);
 
   // Инициализация mainButton только на странице чата
+  const { setClickHandler, setEnabled } = useMainButton();
+
   const handleInputChange = (value: string) => {
     setInputValue(value);
   };
@@ -28,13 +30,16 @@ const Chat: React.FC = () => {
     if (inputValue.trim()) {
       handleSubmit(inputValue);
       setInputValue(""); // Очищаем значение после отправки
-      if (messageInputRef.current) {
-        messageInputRef.current.value = ""; // Очищаем поле ввода
-      }
     }
   }, [inputValue, handleSubmit]);
 
-  const mainButton = useMainButton(handleMainButtonClick);
+  useEffect(() => {
+    setClickHandler(handleMainButtonClick);
+  }, [setClickHandler, handleMainButtonClick]);
+
+  useEffect(() => {
+    setEnabled(!!inputValue.trim());
+  }, [inputValue, setEnabled]);
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -78,8 +83,6 @@ const Chat: React.FC = () => {
         <Box sx={{ position: 'fixed', bottom: 0, left: 0, width: '100%', pl: 1, pr: 1 }}>
           <MessageInput
             ref={messageInputRef}
-            mainButton={mainButton}
-            sendPromptToServer={handleSubmit}
             isLoading={isLoading}
             onHeightChange={setFormHeight}
             value={inputValue}

@@ -1,23 +1,39 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { initMainButton } from "@telegram-apps/sdk";
 
 const [mainButton] = initMainButton();
 
-export const useMainButton = (handleClick: () => void) => {
-    
+export const useMainButton = () => {
+  const handleClickRef = useRef<(() => void) | null>(null);
+  
+  const setClickHandler = useCallback((handler: () => void) => {
+    handleClickRef.current = handler;
+  }, []);
+
   useEffect(() => {
     mainButton.setParams({
       text: "Send ->",
       isVisible: true,
     });
     mainButton.setBgColor('#088C5D');
-    mainButton.on("click", handleClick);
+
+    const clickHandler = () => {
+      if (handleClickRef.current) {
+        handleClickRef.current();
+      }
+    };
+
+    mainButton.on("click", clickHandler);
 
     return () => {
-      mainButton.off("click", handleClick);
+      mainButton.off("click", clickHandler);
       mainButton.hide();
     };
-  }, [handleClick]);
+  }, []);
   
-  return mainButton; // Возвращаем mainButton
+  const setEnabled = useCallback((isEnabled: boolean) => {
+    mainButton.setParams({ isEnabled });
+  }, []);
+
+  return { setClickHandler, setEnabled };
 };

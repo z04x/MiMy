@@ -1,11 +1,8 @@
-import React, { forwardRef, useEffect } from "react";
-import { MainButton } from "@telegram-apps/sdk";
+import React, { forwardRef } from "react";
 import { TextField } from "@mui/material";
-import useResizeObserver from "../hooks/MessageInput/useResizeObserver"; // Импортируем хук для отслеживания изменений размера
+import useResizeObserver from "../hooks/MessageInput/useResizeObserver";
 
 interface MessageInputProps {
-  mainButton: MainButton;
-  sendPromptToServer: (prompt: string) => void;
   isLoading: boolean;
   onHeightChange: (height: number) => void;
   value: string;
@@ -13,7 +10,7 @@ interface MessageInputProps {
 }
 
 const MessageInput = forwardRef<HTMLTextAreaElement, MessageInputProps>(
-  function MessageInput({ mainButton, sendPromptToServer, isLoading, onHeightChange, value, onChange }, ref) {
+  function MessageInput({ isLoading, onHeightChange, value, onChange }, ref) {
 
     const formRef = useResizeObserver(() => {
       if (formRef.current) {
@@ -22,21 +19,8 @@ const MessageInput = forwardRef<HTMLTextAreaElement, MessageInputProps>(
       }
     });
 
-    useEffect(() => {
-      mainButton.setParams({ isEnabled: !!value });
-    }, [value, mainButton]);
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      if (value.trim()) {
-        sendPromptToServer(value);
-        onChange(''); // Очищаем поле ввода после отправки
-      }
-    };
-
     return (
       <form
-        onSubmit={handleSubmit}
         ref={formRef}
         style={{ display: "flex", alignItems: "center" }}
       >
