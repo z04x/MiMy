@@ -12,7 +12,7 @@ export const useMainButton = () => {
 
   useEffect(() => {
     mainButton.setParams({
-      text: "Send ->",
+      text: "Send  ➤",
       isVisible: true,
     });
     mainButton.setBgColor('#088C5D');

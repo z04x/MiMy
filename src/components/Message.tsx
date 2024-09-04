@@ -237,10 +237,10 @@ const MessageComponent: React.FC<MessageProps> = memo(
                   mt: "8px",
                   display: "flex",
                   alignItems: "center",
-                  gap: "3px",
-                  p: "5px 0px",
-                  borderRadius: "99px",
-                  bgcolor: message.isUser ? "#333736" : "background.default",
+                  justifyContent: "center",
+                  p: "8px",
+                  borderRadius: "8px",
+                  bgcolor: message.isUser ? "#FFFFFF17" : "#FFFFFF17",
                 }}
               >
                 <IconButton
