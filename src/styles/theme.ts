@@ -101,7 +101,7 @@ const theme = createTheme({
           },
         },
         {
-          props: { variant: 'text' },
+          props: { variant: 'contained' },
           style: {
             position: 'relative',
             textTransform: 'none',
@@ -110,10 +110,11 @@ const theme = createTheme({
             width: '100%',
             maxHeight: '104px',
             height: '100%',
-            borderRadius: '16px',
+            borderRadius: '8px',
             display: 'flex',
+            textAlign:'center',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: 'center',
             overflow: 'hidden',
             backgroundColor: '#FFFFFF0F',
             '&::before': {
@@ -123,7 +124,6 @@ const theme = createTheme({
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundImage: `url(${Gala})`,
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
               backgroundSize: 'cover',

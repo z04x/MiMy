@@ -21,6 +21,7 @@ import mistralIcon from "../assets/images/mistral-ai-icon-seeklogo.svg";
 import { useNavigate } from "react-router-dom";
 import { useUser } from '../contexts/UserContext'; // Обновляем импорт
 import { initMainButton } from "@telegram-apps/sdk";
+import CloseIcon from '@mui/icons-material/Close';
 const [mainButton] = initMainButton(); 
 mainButton.hide();
 
@@ -145,7 +146,7 @@ const ChatHistory: React.FC = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", height: "100vh", flexDirection: "column", alignItems: "center", width: "100%", pb:'62px'}}>
+    <Box sx={{ display: "flex", height: "100vh", flexDirection: "column", alignItems: "center", width: "100%", pb:'62px', position:'relative'}}>
       <Typography variant="h4" component="div" sx={{ mb: 4, color: '#fff' }}>
         Chat History
       </Typography>
@@ -199,24 +200,85 @@ const ChatHistory: React.FC = () => {
         <Typography variant="body1">No chat history available</Typography>
       )}
 
-      <Dialog open={openRenameDialog} onClose={handleRenameClose}>
-        <DialogTitle>Переименовать чат</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Новое название"
-            type="text"
-            fullWidth
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleRenameClose}>Отмена</Button>
-          <Button onClick={handleRenameSubmit}>Переименовать</Button>
-        </DialogActions>
-      </Dialog>
+<Dialog 
+  open={openRenameDialog} 
+  onClose={handleRenameClose}
+  PaperProps={{
+    style: {
+      backgroundColor: '#1E1E1E',
+      borderRadius: '12px',
+      padding: '16px',
+      position:'absolute',
+      top:'10%',
+      left:'0',
+      right:'0',
+    }
+  }}
+>
+  <DialogTitle sx={{ color: '#FFFFFF', fontSize: '18px', fontWeight:'600', textAlign: 'center', padding: '0px 0', marginBottom: '16px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+    Rename the chat
+    <IconButton
+    aria-label="close"
+    onClick={handleRenameClose}
+    sx={{
+      color: '#FFFFFF'
+    }}
+  >
+    <CloseIcon />
+  </IconButton>
+  </DialogTitle>
+  <DialogContent sx={{ width: '100%', padding: '0' }}>
+    <TextField
+      type="text"
+      fullWidth
+      autoFocus
+      value={newTitle}
+      onChange={(e) => setNewTitle(e.target.value)}
+      variant="outlined"
+      InputProps={{
+        style: {
+          color: '#FFFFFF',
+          backgroundColor: '#2C2C2C',
+          borderRadius: '8px',
+          padding: '10px 12px',
+          fontSize: '16px',
+          maxHeight:'46px'
+        }
+      }}
+      placeholder="Новое название"
+      sx={{
+        '& .MuiOutlinedInput-notchedOutline': {
+          border: 'none'
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+          border: 'none'
+        },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+          border: 'none'
+        }
+      }}
+    />
+  </DialogContent>
+  <DialogActions sx={{ justifyContent: 'center', padding: '16px 0 0 0' }}>
+    <Button 
+      variant="contained" 
+      onClick={handleRenameSubmit}
+      sx={{
+        color: '#FFFFFF',
+        backgroundColor: '#088C5D',
+        textAlign: 'center',
+        width: '100%',
+        borderRadius: '8px',
+        textTransform: 'none',
+        fontSize: '16px',
+        padding: '10px 0',
+        maxHeight:'46px'
+      }}
+    >
+      Save
+    </Button>
+  </DialogActions>
+</Dialog>
 
       <BottomNavBar current="/history" />
     </Box>
