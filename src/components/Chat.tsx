@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Box } from "@mui/material";
 import { useParams } from "react-router-dom";
 import MessageList from "./MessageList";
@@ -12,6 +12,7 @@ const Chat: React.FC = () => {
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
   const [formHeight, setFormHeight] = useState<number>(0);
+  const [inputValue, setInputValue] = useState("");
 
   // Использование контекста для получения данных пользователя
   const { user, loading, error } = useUser(); // Получаем user, loading и error из контекста
@@ -19,11 +20,21 @@ const Chat: React.FC = () => {
   const { messages, isLoading, handleSubmit, setLoading } = useChat(chatId, user!);
 
   // Инициализация mainButton только на странице чата
-  const mainButton = useMainButton(() => {
-    if (messageInputRef.current) {
-      handleSubmit(messageInputRef.current.value);
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+  };
+
+  const handleMainButtonClick = useCallback(() => {
+    if (inputValue.trim()) {
+      handleSubmit(inputValue);
+      setInputValue(""); // Очищаем значение после отправки
+      if (messageInputRef.current) {
+        messageInputRef.current.value = ""; // Очищаем поле ввода
+      }
     }
-  });
+  }, [inputValue, handleSubmit]);
+
+  const mainButton = useMainButton(handleMainButtonClick);
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -67,10 +78,12 @@ const Chat: React.FC = () => {
         <Box sx={{ position: 'fixed', bottom: 0, left: 0, width: '100%', pl: 1, pr: 1 }}>
           <MessageInput
             ref={messageInputRef}
-            mainButton={mainButton} // Передаем mainButton
+            mainButton={mainButton}
             sendPromptToServer={handleSubmit}
             isLoading={isLoading}
             onHeightChange={setFormHeight}
+            value={inputValue}
+            onChange={handleInputChange}
           />
         </Box>
       </Box>
