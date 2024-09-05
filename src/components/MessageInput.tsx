@@ -1,7 +1,6 @@
 import React, { forwardRef } from "react";
 import { Box, TextField } from "@mui/material";
 import useResizeObserver from "../hooks/MessageInput/useResizeObserver";
-// import { TextareaAutosize } from '@mui/base/TextareaAutosize';
 interface MessageInputProps {
   isLoading: boolean;
   onHeightChange: (height: number) => void;
@@ -27,6 +26,7 @@ const MessageInput = forwardRef<HTMLTextAreaElement, MessageInputProps>(
         <TextField
           multiline
           fullWidth
+          autoFocus
           minRows={1}
           maxRows={5}
           inputRef={ref}
@@ -41,7 +41,6 @@ const MessageInput = forwardRef<HTMLTextAreaElement, MessageInputProps>(
               padding: 'auto 15px',
               marginBottom:'6px',
               borderRadius: '16px',
-              border: '1px solid #383939',
             },
           }}
         />

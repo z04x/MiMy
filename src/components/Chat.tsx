@@ -6,7 +6,6 @@ import MessageInput from "./MessageInput";
 import { useUser } from '../contexts/UserContext'; 
 import { useChat } from '../hooks/Chat/useChat';
 import { useMainButton } from '../hooks/Chat/useMainButton';
-
 const CHAT_STYLES = {
   container: { height: '100%', maxHeight: '100%', overflow: 'hidden' },
   innerContainer: { display: "flex", flexDirection: "column", width: '100%' },
@@ -36,9 +35,7 @@ const Chat: React.FC = () => {
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
   const [formHeight, setFormHeight] = useState<number>(0);
   const [inputValue, setInputValue] = useState("");
-
   const { user, loading } = useUser();
-
   // Используем useChat только если пользователь загружен
   const { messages, isLoading, handleSubmit, setLoading } = useChat(chatId, user!);
 

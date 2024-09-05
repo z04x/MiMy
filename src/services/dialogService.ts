@@ -112,3 +112,37 @@ export const getChatInfo = async (userId: number, dialogId: number): Promise<Cha
 
   return response.json();
 };
+
+export interface Model {
+  assistant_code: string;
+  label: string;
+  logo_url: string;
+  is_premium: boolean;
+  short_description: string;
+}
+
+interface ModelDetails extends Model {
+  id: number;
+  description: string;
+  preview_message: string;
+}
+
+export const getAllModels = async (): Promise<Model[]> => {
+  try {
+    const response = await api.get<Model[]>('/models');
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при получении списка моделей:", error);
+    throw error;
+  }
+};
+
+export const getModelById = async (assistant_code: string): Promise<ModelDetails> => {
+  try {
+    const response = await api.get<ModelDetails>(`/models/${assistant_code}`);
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при получении деталей модели:", error);
+    throw error;
+  }
+};

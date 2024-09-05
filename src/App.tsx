@@ -9,6 +9,7 @@ import Chat from './components/Chat';
 import ChatHistory from './components/ChatHistory';
 import HomeScreen from './components/HomeScreen';
 import UpgradePage from './components/UpgradePage';
+import ModelSelection from './components/ModelSelection';
 import { initTelegram } from './telegramUtils';
 import { UserProvider } from './contexts/UserContext'; // Импортируем UserProvider
 
@@ -37,6 +38,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/chat/:chatId" element={<Chat />} />
               <Route path="/chat-history" element={<ChatHistory/>} />
+              <Route path="/model-selection" element={<ModelSelection />} />
               <Route path="/" element={<HomeScreen />} />
               <Route path="/upgrade" element={<UpgradePage />} />
             </Routes>

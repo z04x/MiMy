@@ -1,56 +1,52 @@
-import React, { useState } from "react";
+// import React, { useState } from "react";
 import {
   Box,
   Button,
   Typography,
-  Modal,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import BottomNavBar from "./BottomNavBar";
-import { createChat } from "../services/dialogService";
+// import { createChat } from "../services/dialogService";
 import { useUser } from "../contexts/UserContext";
 import { initMainButton } from "@telegram-apps/sdk";
 const [mainButton] = initMainButton(); 
 
 
 const HomeScreen: React.FC = () => {
-  const [open, setOpen] = useState(false);
-  const [model, setModel] = useState<string>("gpt-4o-mini");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // const [setOpen] = useState(false);
+  // const [model] = useState<string>("gpt-4o-mini");
+  // const [setLoading] = useState(false);
+  // const [ setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { user } = useUser(); // Получаем пользователя из контекста
 
   
   mainButton.hide() //todo вывести кнопку в контекст, что бы скрывать там где она не нужна
 
-  const handleCreateChat = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      if (!user) throw new Error("User not found"); // Проверяем, что пользователь существует
-      const newDialogId = await createChat(user.user_id, model); // Используем user.user_id
-      navigate(`/chat/${newDialogId}`);
-    } catch (err) {
-      console.error("Error creating chat:", err);
-      setError("Failed to create chat");
-    } finally {
-      setLoading(false);
-      setOpen(false);
-    }
-  };
+  // const handleCreateChat = async () => {
+  //   setLoading(true);
+  //   setError(null);
+  //   try {
+  //     if (!user) throw new Error("User not found"); // Проверяем, что пользователь существует
+  //     const newDialogId = await createChat(user.user_id, model); // Используем user.user_id
+  //     navigate(`/chat/${newDialogId}`);
+  //   } catch (err) {
+  //     console.error("Error creating chat:", err);
+  //     setError("Failed to create chat");
+  //   } finally {
+  //     setLoading(false);
+  //     setOpen(false);
+  //   }
+  // };
 
   const handleButtonClick = (chatType: string) => {
     if (chatType === 'simple-chat') {
-      setOpen(true); // Открываем модальное окно для выбора модели
+      navigate('/model-selection', { state: { simpleChat: true } }); // Передаем флаг simpleChat
     } else {
       const isPremium = user?.subscription.subscription_type === 'premium';
       if (isPremium || chatType !== 'premium') {
         navigate(`/upgrade`); // Переход к чату, если есть премиум или это не премиум чат
-      } else {
+      } else {  //todo сделать переход в чат премиум
         navigate('/upgrade'); // Переход на страницу предложения о покупке премиума
       }
     }
@@ -129,47 +125,6 @@ const HomeScreen: React.FC = () => {
           </Box>
         </Button>
       </Box>
-
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <Box
-          sx={{
-            padding: 4,
-            backgroundColor: "white",
-            borderRadius: 2,
-            maxWidth: 400,
-            mx: "auto",
-            mt: 8,
-          }}
-        >
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Выберите модель
-          </Typography>
-          <RadioGroup value={model} onChange={(e) => setModel(e.target.value)}>
-            <FormControlLabel
-              value="gpt-4o-mini"
-              control={<Radio />}
-              label="GPT-4O-Mini"
-            />
-            <FormControlLabel
-              value="mistral"
-              control={<Radio />}
-              label="Mistral"
-            />
-          </RadioGroup>
-          <Button
-            onClick={handleCreateChat}
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ mt: 2}}
-            disabled={loading}
-          >
-            {loading ? "Создание..." : "Создать чат"}
-          </Button>
-          {error && <Typography color="error">{error}</Typography>}
-        </Box>
-      </Modal>
-
       <BottomNavBar current="/" />
     </Box>
   );

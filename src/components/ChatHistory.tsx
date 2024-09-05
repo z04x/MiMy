@@ -157,23 +157,24 @@ const ChatHistory: React.FC = () => {
     }
   };
   return (
-    <Box sx={{ display: "flex", height: "100vh", flexDirection: "column", alignItems: "center", width: "100%", pb:'62px', position:'relative'}}>
-      <Typography variant="h4" component="div" sx={{ mb: 4, color: '#fff' }}>
+    <Box sx={{ display: "flex", height: "100vh", flexDirection: "column", alignItems: "center", width: "100%", pb:'74px'}}>
+      <Typography variant="h4" component="div" sx={{ mb: 3,pb:'16px', color: '#fff' }}>
         Chat History
       </Typography>
       {loading ? (
         <Typography variant="body1">Loading...</Typography>
       ) : chatHistory.length > 0 ? (
-        <Box sx={{ display: "flex", flexDirection: 'column', width: "100%", overflowY:'auto',  height: "100%"}}>
+        <Box sx={{ overflow:'auto', width:'100%',}}>
+          <Box sx={{ display: "flex", flexDirection: 'column', width: "100%",}}>
           {chatHistory.map((chat) => (
       
             <Box
               key={chat.dialog_id}
-              sx={{ display: "flex", alignItems: "center", mb: '12px', bgcolor: 'background.paper', width: "100%", p: '0px 12px', borderRadius: '16px', cursor: 'pointer' }}
+              sx={{ display: "flex", alignItems: "center", mb: '12px', bgcolor: 'background.paper', width: "100%", p: '0px 12px', borderRadius: '16px', cursor: 'pointer'}}
               onClick={() => handleChatClick(chat.dialog_id)}
             >
               {getModelAvatar(chat.model)}
-              <Box sx={{ flexGrow: 1, p: 0, m: 0, height:'56px', display:'flex', flexDirection:'column', justifyContent:'center' }}>
+              <Box sx={{ flexGrow: 1, p: 0, m: 0, minHeight:'56px', height:'56px', display:'flex', flexDirection:'column', justifyContent:'center' }}>
                 <Typography sx={{ color: '#fff', fontWeight: '400', lineHeight: '22px' }} variant="h6">
                   {(chat.title || `Chat ${chat.dialog_id}`)
                     .replace(/(Input prompt|Chat Title):/gi, '')
@@ -197,6 +198,8 @@ const ChatHistory: React.FC = () => {
             </Box>
           ))}
         </Box>
+        </Box>
+
       ) : (
         <Typography variant="body1">No chat history available</Typography>
       )}
@@ -326,7 +329,7 @@ const ChatHistory: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      <BottomNavBar current="/history" />
+        <BottomNavBar current="/chat-history" />
     </Box>
   );
 };

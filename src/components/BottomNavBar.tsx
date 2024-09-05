@@ -16,11 +16,51 @@ const BottomNavBar: React.FC<{ current: string }> = ({ current }) => {
       onChange={(event, newValue) => {
         navigate(newValue);
       }}
-      sx={{ position: 'fixed', bottom: 0, width: '100%'}}
+      sx={{
+        position: 'fixed',
+        bottom: 0,
+        width: '100%',
+        height: '64px',
+        backgroundColor: 'background.default',
+        '& .MuiBottomNavigationAction-root': {
+          color: '#888',
+          minWidth: 'auto',
+          padding: '6px 0',
+          '&.Mui-selected': {
+            color: 'white',
+          },
+          '& .MuiBottomNavigationAction-label': {
+            fontSize: '0.75rem',
+            '&.Mui-selected': {
+              fontSize: '0.75rem',
+            },
+          },
+          '& .MuiSvgIcon-root': {
+            fontSize: '1.5rem', // Фиксированный размер иконок
+            transition: 'none', // Отключаем анимацию перехода
+          },
+        },
+      }}
     >
-      <BottomNavigationAction label="Home" value="/" icon={<HomeIcon />} />
-      <BottomNavigationAction label="History" value="/chat-history" icon={<HistoryIcon />} />
-      <BottomNavigationAction label="Account" value="/account" icon={<AccountCircleIcon />} disabled />
+      <BottomNavigationAction
+        label="Home"
+        value="/"
+        icon={<HomeIcon />}
+        showLabel={true} // Всегда показывать метку
+      />
+      <BottomNavigationAction
+        label="History"
+        value="/chat-history"
+        icon={<HistoryIcon />}
+        showLabel={true}
+      />
+      <BottomNavigationAction
+        label="Account"
+        value="/account"
+        icon={<AccountCircleIcon />}
+        showLabel={true}
+        disabled
+      />
     </BottomNavigation>
   );
 };
