@@ -7,13 +7,16 @@ export const getMessagesFromDialog = async (userId: number, dialogId: number) =>
       `/users/${userId}/dialogs/${dialogId}/messages`
     );
     console.log(response.data);
-    return response.data.messages.map((message: any) => ({
-      text: message.content,
-      isUser: message.role === "user",
-      isLoading: false,
-    }));
+    return {
+      messages: response.data.messages.map((message: any) => ({
+        text: message.content,
+        isUser: message.role === "user",
+        isLoading: false,
+      })),
+      model: response.data.dialog.model // Теперь получаем model из dialog
+    };
   } catch (error) {
-    console.error("Error fetching messages from dialog:", error);
+    console.error("Ошибка при получении сообщений из диалога:", error);
     throw error;
   }
 };
@@ -137,9 +140,11 @@ export const getAllModels = async (): Promise<Model[]> => {
   }
 };
 
-export const getModelById = async (assistant_code: string): Promise<ModelDetails> => {
+export const getModelById = async (userId: number, dialogId: number): Promise<ModelDetails> => {
   try {
-    const response = await api.get<ModelDetails>(`/models/${assistant_code}`);
+    const { model } = await getMessagesFromDialog(userId, dialogId);
+    const response = await api.get<ModelDetails>(`/models/${model}`);
+    console.log("Ответ API для модели:", response.data);
     return response.data;
   } catch (error) {
     console.error("Ошибка при получении деталей модели:", error);

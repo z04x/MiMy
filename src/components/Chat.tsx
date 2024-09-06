@@ -6,6 +6,9 @@ import MessageInput from "./MessageInput";
 import { useUser } from '../contexts/UserContext'; 
 import { useChat } from '../hooks/Chat/useChat';
 import { useMainButton } from '../hooks/Chat/useMainButton';
+import { getModelById} from '../services/dialogService';
+import { ModelDetails } from "../interfaces/ModelDetails";
+
 const CHAT_STYLES = {
   container: { height: '100%', maxHeight: '100%', overflow: 'hidden' },
   innerContainer: { display: "flex", flexDirection: "column", width: '100%' },
@@ -36,8 +39,8 @@ const Chat: React.FC = () => {
   const [formHeight, setFormHeight] = useState<number>(0);
   const [inputValue, setInputValue] = useState("");
   const { user, loading } = useUser();
-  // Используем useChat только если пользователь загружен
   const { messages, isLoading, handleSubmit, setLoading } = useChat(chatId, user!);
+  const [modelDetails, setModelDetails] = useState<ModelDetails | null>(null);
 
   const { setClickHandler, setEnabled } = useMainButton();
 
@@ -59,6 +62,20 @@ const Chat: React.FC = () => {
   useEffect(() => {
     setClickHandler(handleMainButtonClick);
   }, [setClickHandler, handleMainButtonClick]);
+  useEffect(() => {
+    if (user && chatId) {
+      const fetchModelDetails = async () => {
+        try {
+          const details = await getModelById(user.user_id, parseInt(chatId));
+          setModelDetails(details);
+        } catch (error) {
+          console.error("Ошибка при получении деталей модели:", error);
+        }
+      };
+
+      fetchModelDetails();
+    }
+  }, [user, chatId]);
 
   useEffect(() => {
     setEnabled(!!inputValue.trim());
@@ -78,8 +95,9 @@ const Chat: React.FC = () => {
       messages={messages}
       endOfMessagesRef={endOfMessagesRef}
       setLoading={setLoading}
+      modelDetails={modelDetails}
     />
-  ), [messages, endOfMessagesRef, setLoading]);
+  ), [messages, endOfMessagesRef, setLoading, modelDetails]);
 
   const memoizedMessageInput = useMemo(() => (
     <MessageInput

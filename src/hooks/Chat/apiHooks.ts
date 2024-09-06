@@ -22,9 +22,10 @@ export const fetchUserData = async (): Promise<User> => {
 
 export const loadMessages = async (userId: number, dialogId: number): Promise<Message[]> => {
   try {
-    return await getMessagesFromDialog(userId, dialogId);
+    const { messages } = await getMessagesFromDialog(userId, dialogId);
+    return messages;
   } catch (error) {
-    console.error("Error fetching messages:", error);
+    console.error("Ошибка при получении сообщений:", error);
     throw error;
   }
 };

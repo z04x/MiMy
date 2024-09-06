@@ -1,18 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Avatar } from "@mui/material";
 import { Message } from "../interfaces/Message";
 import MessageComponent from "./Message";
+import { ModelDetails } from "../interfaces/ModelDetails";
 
 interface MessageListProps {
   messages: Message[];
   endOfMessagesRef: React.RefObject<HTMLDivElement>;
   setLoading: (isLoading: boolean) => void;
+  modelDetails: ModelDetails | null;
 }
 
 const MessageList: React.FC<MessageListProps> = ({
   messages,
   endOfMessagesRef,
   setLoading,
+  modelDetails,
 }) => {
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -118,8 +121,48 @@ const MessageList: React.FC<MessageListProps> = ({
           {/* Reference to scroll into view can be useful for new messages */}
           <div ref={endOfMessagesRef} />
         </>
+      ) : modelDetails ? (
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'flex-start', 
+          padding: 2, 
+          backgroundColor: 'background.default', 
+          borderRadius: 2,
+          color: 'white',
+          maxWidth: '600px',
+          margin: '0 auto'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
+            <Avatar src={modelDetails.logo_url} alt={modelDetails.label} 
+              sx={{borderRadius:'0px', width: 24, height: 24, marginRight: 1, backgroundColor: 'inherit' }} />
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+              {modelDetails.label}
+            </Typography>
+          </Box>
+          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', marginBottom: 2 }}>
+            {modelDetails.short_description}
+          </Typography>
+          <Typography variant="body2" sx={{ marginBottom: 2 }}>
+            {modelDetails.description}
+          </Typography>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            backgroundColor: 'background.paper', 
+            borderRadius: 1,
+            padding: 1,
+            width: '100%'
+          }}>
+            {/* <Avatar src={modelDetails.logo_url} alt={modelDetails.label} 
+              sx={{borderRadius:'0px', width: 24, height: 24, marginRight: 1, backgroundColor: 'inherit' }} /> */}
+            <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+              {modelDetails.preview_message}
+            </Typography>
+          </Box>
+        </Box>
       ) : (
-        <Typography variant="body1">No messages</Typography>
+        <Typography variant="body1">Загрузка деталей модели...</Typography>
       )}
     </Box>
   );
