@@ -36,6 +36,7 @@ const MessageInput = forwardRef<HTMLTextAreaElement, MessageInputProps>(
           placeholder="Type a message..."
           InputProps={{
             style: {
+              border: '1px solid #383939',
               flexGrow: 1, 
               marginRight: '10px',              
               padding: 'auto 15px',

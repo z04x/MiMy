@@ -20,6 +20,7 @@ const ModelSelection: React.FC = () => {
     const fetchModels = async () => {
       try {
         const allModels = await getAllModels();
+        console.log("Все доступные модели:", allModels);
         if (isSimpleChat) {
           // Фильтруем только ChatGPT и Mistral для простого чата
           setModels(allModels.filter(model => 

@@ -9,6 +9,8 @@ import BottomNavBar from "./BottomNavBar";
 // import { createChat } from "../services/dialogService";
 import { useUser } from "../contexts/UserContext";
 import { initMainButton } from "@telegram-apps/sdk";
+import { createChat } from "../services/dialogService";
+
 const [mainButton] = initMainButton(); 
 
 
@@ -39,18 +41,30 @@ const HomeScreen: React.FC = () => {
   //   }
   // };
 
-  const handleButtonClick = (chatType: string) => {
+  const handleButtonClick = async (chatType: string) => {
     if (chatType === 'simple-chat') {
       navigate('/model-selection', { state: { simpleChat: true } }); // Передаем флаг simpleChat
-    } else {
+    } else if (chatType === 'sales-generator') {
       const isPremium = user?.subscription.subscription_type === 'premium';
-      if (isPremium || chatType !== 'premium') {
-        navigate(`/upgrade`); // Переход к чату, если есть премиум или это не премиум чат
-      } else {  //todo сделать переход в чат премиум
-        navigate('/upgrade'); // Переход на страницу предложения о покупке премиума
+      if (isPremium) {
+        try {
+          if (!user) throw new Error("Пользователь не найден");
+          const newDialogId = await createChat(user.user_id, "sales-text-generator");
+          navigate(`/chat/${newDialogId}`);
+        } catch (err) {
+          console.error("Ошибка при создании чата:", err);
+          // Здесь можно добавить обработку ошибки, например, показать уведомление пользователю
+        }
+      } else {
+        navigate('/upgrade');
       }
+    } else {
+      // Обработка других типов чатов
+      navigate('/upgrade');
     }
   };
+
+  const isPremium = user?.subscription.subscription_type === 'premium';
 
   return (
     <Box
@@ -92,17 +106,18 @@ const HomeScreen: React.FC = () => {
         <Button 
           variant="text"
           onClick={() => handleButtonClick('sales-generator')}
+          disabled={!isPremium}
         >
           <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '89px', height: '100%'}}>
             <img src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/sales-generator.png" alt="Robot" />
           </Box>
           <Box sx={{maxWidth: '300px'}}>
             <Typography sx={{display:'flex', justifyContent:'space-between',fontSize: '17px', fontWeight: '500', lineHeight: '22px', textAlign: 'left', color: '#fff'}}>
-              Generation of sales text
+              Sales Generator
               <img src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/premium-icon.svg" alt="Premium" />
             </Typography>
             <Typography sx={{fontSize: '17px', fontWeight: '400', lineHeight: '22px', textAlign: 'left', color: '#FFFFFFA3',}}>
-              I completed the final polish on the design and exported all.
+              {isPremium ? "Продовать через текст никогда не было так просто" : "Требуется премиум-подписка"}
             </Typography>
           </Box>
         </Button>
