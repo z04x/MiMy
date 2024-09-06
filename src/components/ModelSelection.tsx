@@ -84,7 +84,7 @@ const ModelSelection: React.FC = () => {
             variant="text"
             onClick={() => handleCreateChat(model.assistant_code)}
             disabled={loading || (model.is_premium && user?.subscription.subscription_type !== 'premium')}
-            sx={{maxWidth:'400px', height:'78px', display:'flex', alignItems:'center', justifyContent:'space-around'}}
+            sx={{maxWidth:'400px', height:'78px', display:'flex', alignItems:'center', justifyContent:'start'}}
           >
             <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center',borderRadius:'99px', width: '56px', height: '56px',minWidth:'56px',minHeight:'56px', backgroundColor:'#1F2322', mr:'12px', ml:'16px'}}>
               <img src={model.logo_url} alt={model.label} />

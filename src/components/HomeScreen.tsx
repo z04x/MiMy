@@ -44,7 +44,7 @@ const HomeScreen: React.FC = () => {
   const handleButtonClick = async (chatType: string) => {
     if (chatType === 'simple-chat') {
       navigate('/model-selection', { state: { simpleChat: true } }); // Передаем флаг simpleChat
-    } else if (chatType === 'sales-generator') {
+    } else if (chatType === 'sales-generator') { // пока что готова одна модель
       const isPremium = user?.subscription.subscription_type === 'premium';
       if (isPremium) {
         try {
@@ -64,7 +64,7 @@ const HomeScreen: React.FC = () => {
     }
   };
 
-  const isPremium = user?.subscription.subscription_type === 'premium';
+  // const isPremium = user?.subscription.subscription_type === 'premium';
 
   return (
     <Box
@@ -106,7 +106,6 @@ const HomeScreen: React.FC = () => {
         <Button 
           variant="text"
           onClick={() => handleButtonClick('sales-generator')}
-          disabled={!isPremium}
         >
           <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '89px', height: '100%'}}>
             <img src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/sales-generator.png" alt="Robot" />
