@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.d72e7e3a.css",
-    "main.js": "/static/js/main.685539ce.js",
+    "main.css": "/static/css/main.de545a76.css",
+    "main.js": "/static/js/main.7e3a223d.js",
     "static/js/453.d855a71b.chunk.js": "/static/js/453.d855a71b.chunk.js",
     "static/media/SFProText-Heavy.ttf": "/static/media/SFProText-Heavy.a6d0a7c7709218b4a46c.ttf",
     "static/media/SFProText-Bold.ttf": "/static/media/SFProText-Bold.9dae2991f4fb30a5f7e0.ttf",
@@ -10,15 +10,16 @@
     "static/media/SFProText-Medium.ttf": "/static/media/SFProText-Medium.fc3c323b3b2bb1c643ee.ttf",
     "static/media/SFProText-Regular.ttf": "/static/media/SFProText-Regular.90da7ab18293ca42e335.ttf",
     "static/media/galactic_stars.png": "/static/media/galactic_stars.1af9ae881dc34b7bb098.png",
-    "static/media/mistral-ai-icon-seeklogo.svg": "/static/media/mistral-ai-icon-seeklogo.a249186304a4f89d7d14e7d025ee5985.svg",
+    "static/media/salesGenerator.png": "/static/media/salesGenerator.716e761255b2371b987a.png",
+    "static/media/mistral-ai-icon-seeklogo.svg": "/static/media/mistral-ai-icon-seeklogo.027143811e4c3feb1b434a3e8a13ffa7.svg",
     "static/media/chatgpt-6.svg": "/static/media/chatgpt-6.0c88a3b45dde00fbfcf605dd8123f7b9.svg",
     "index.html": "/index.html",
-    "main.d72e7e3a.css.map": "/static/css/main.d72e7e3a.css.map",
-    "main.685539ce.js.map": "/static/js/main.685539ce.js.map",
+    "main.de545a76.css.map": "/static/css/main.de545a76.css.map",
+    "main.7e3a223d.js.map": "/static/js/main.7e3a223d.js.map",
     "453.d855a71b.chunk.js.map": "/static/js/453.d855a71b.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.d72e7e3a.css",
-    "static/js/main.685539ce.js"
+    "static/css/main.de545a76.css",
+    "static/js/main.7e3a223d.js"
   ]
 }

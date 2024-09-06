@@ -95,7 +95,7 @@ const UpgradePage: React.FC = () => {
               "rotateY": 1200
             }
           }
-        },
+        }, //todo убрать взаимодействие с мышкой 
         "interactivity": {
           "detect_on": "canvas",
           "events": {
