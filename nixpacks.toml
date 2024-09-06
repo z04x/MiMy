@@ -1,0 +1,12 @@
+[phases.setup]
+nixPkgs = ['...'] # Add any Nix packages you need here
+
+[phases.build]
+cmd = "npm install && npm run build"
+
+[phases.deploy]
+cmd = "echo 'Deployment completed'"
+
+[[phases.deploy.copy]]
+source = "build/"
+destination = "/app/build"
