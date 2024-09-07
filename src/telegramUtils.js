@@ -1,5 +1,3 @@
-import { initBackButton } from '@telegram-apps/sdk';
-
 export const initTelegram = async () => {
   // Проверка доступности Telegram WebApp
   if (!window.Telegram?.WebApp) {
