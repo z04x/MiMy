@@ -60,7 +60,6 @@ const ChatHistory: React.FC = () => {
   const [openRenameDialog, setOpenRenameDialog] = useState(false);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [newTitle, setNewTitle] = useState("");
-  const {setIsVisible } = useBackButton();
   interface GroupedChats {
   [key: string]: Chat[];
 }
@@ -102,13 +101,6 @@ const ChatHistory: React.FC = () => {
       Object.entries(groups).filter(([_, chats]) => chats.length > 0)
     );
   }, []);
-
-  useEffect(() => {
-    setIsVisible(true);
-    return () => {
-      setIsVisible(false);
-    };
-  }, [setIsVisible]);
 
   useEffect(() => {
     const fetchChatHistory = async () => {

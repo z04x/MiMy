@@ -5,14 +5,12 @@ import { Box, Button, Typography, CircularProgress } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createChat, getAllModels, Model } from "../services/dialogService";
 import { useUser } from "../contexts/UserContext";
-import { useBackButton } from "../hooks/Chat/useBackButton";
 import BottomNavBar from "./BottomNavBar";
 
 const ModelSelection: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [models, setModels] = useState<Model[]>([]);
-  const {setIsVisible } = useBackButton();
   const navigate = useNavigate();
   const { user } = useUser();
   const location = useLocation();
@@ -39,14 +37,7 @@ const ModelSelection: React.FC = () => {
 
     fetchModels();
   }, [isSimpleChat]);
-
-  useEffect(() => {
-    setIsVisible(true);
-    return () => {
-      setIsVisible(false);
-    };
-  }, [setIsVisible]);
-
+  
   const handleCreateChat = async (selectedModel: string) => {
     setLoading(true);
     setError(null);

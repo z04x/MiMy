@@ -12,6 +12,7 @@ import UpgradePage from './components/UpgradePage';
 import ModelSelection from './components/ModelSelection';
 import { initTelegram } from './telegramUtils';
 import { UserProvider } from './contexts/UserContext'; // Импортируем UserProvider
+import { useBackButton } from "./hooks/Chat/useBackButton";
 
 const App: React.FC = () => {
   useEffect(() => {

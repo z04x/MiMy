@@ -10,6 +10,8 @@ import BottomNavBar from "./BottomNavBar";
 import { useUser } from "../contexts/UserContext";
 import { initMainButton } from "@telegram-apps/sdk";
 import { createChat } from "../services/dialogService";
+import { useBackButton } from "../hooks/Chat/useBackButton";
+import { useEffect } from "react";
 
 const [mainButton] = initMainButton(); 
 
@@ -21,6 +23,7 @@ const HomeScreen: React.FC = () => {
   // const [ setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { user } = useUser(); // Получаем пользователя из контекста
+  const { setIsVisible } = useBackButton();
 
   
   mainButton.hide() //todo вывести кнопку в контекст, что бы скрывать там где она не нужна
@@ -40,6 +43,13 @@ const HomeScreen: React.FC = () => {
   //     setOpen(false);
   //   }
   // };
+
+  useEffect( () => {
+    setIsVisible(false);
+    return () => {
+      setIsVisible(true);
+    }
+  })
 
   const handleButtonClick = async (chatType: string) => {
     if (chatType === 'simple-chat') {

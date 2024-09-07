@@ -6,7 +6,6 @@ import MessageInput from "./MessageInput";
 import { useUser } from '../contexts/UserContext'; 
 import { useChat } from '../hooks/Chat/useChat';
 import { useMainButton } from '../hooks/Chat/useMainButton';
-import { useBackButton } from '../hooks/Chat/useBackButton';
 import { getModelById} from '../services/dialogService';
 import { ModelDetails } from "../interfaces/ModelDetails";
 
@@ -44,7 +43,6 @@ const Chat: React.FC = () => {
   const [modelDetails, setModelDetails] = useState<ModelDetails | null>(null);
 
   const { setClickHandler, setEnabled } = useMainButton();
-  const { setIsVisible } = useBackButton();
 
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value);
@@ -60,14 +58,6 @@ const Chat: React.FC = () => {
       }
     }
   }, [inputValue, handleSubmit]);
-
-  useEffect(() => {
-    setIsVisible(true);
-
-    return () => {
-      setIsVisible(false);
-    };
-  }, [setIsVisible]);
 
   useEffect(() => {
     setClickHandler(handleMainButtonClick);

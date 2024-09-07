@@ -2,18 +2,8 @@ import React, { useEffect, useLayoutEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import { initMainButton } from "@telegram-apps/sdk";
 import CheckIcon from '@mui/icons-material/Check';
-import { useBackButton } from "../hooks/Chat/useBackButton";
 declare const particlesJS: any;
 const UpgradePage: React.FC = () => {
-
-  const {setIsVisible } = useBackButton();
-  useEffect(() => {
-    setIsVisible(true);
-    return () => {
-      setIsVisible(false);
-    };
-  }, [setIsVisible]);
-
   useEffect(() => {
     const [mainButton] = initMainButton();
 
