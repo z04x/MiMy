@@ -24,6 +24,9 @@ export const initTelegram = async () => {
     console.error('Back button could not be initialized');
   }
 
+  // Раскрытие приложения
+  window.Telegram.WebApp.expand();
+
   // Отключение вертикальных свайпов
   window.Telegram.WebApp.disableVerticalSwipes();
 }
