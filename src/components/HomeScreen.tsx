@@ -152,7 +152,7 @@ const HomeScreen: React.FC = () => {
 
         <Button
           variant="text"
-          onClick={() => handleButtonClick("sales-generator")}
+          onClick={() => handleButtonClick("sales-text-generator")}
         >
           <Box
             sx={{
