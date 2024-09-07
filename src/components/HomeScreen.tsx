@@ -126,7 +126,7 @@ const HomeScreen: React.FC = () => {
               <img src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/premium-icon.svg" alt="Premium" />
             </Typography>
             <Typography sx={{fontSize: '17px', fontWeight: '400', lineHeight: '22px', textAlign: 'left', color: '#FFFFFFA3',}}>
-              Продавать через текст никогда не было так просто
+              Представьте продукт, а мы мгновенно сделаем его продающим!
             </Typography>
           </Box>
         </Button>
