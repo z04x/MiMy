@@ -7,22 +7,22 @@ export const initTelegram = async () => {
     return;
   }
 
-  // Инициализация кнопки "Назад"
-  const [backButton] = await initBackButton(); // Предполагается, что это асинхронная функция
+  // // Инициализация кнопки "Назад"
+  // const [backButton] = await initBackButton(); // Предполагается, что это асинхронная функция
 
-  if (backButton) {
-    backButton.show();
-    console.log('Back button visible:', backButton.isVisible); // Проверяем видимость кнопки
-    console.log('Back button info:', backButton);
+  // if (backButton) {
+  //   backButton.show();
+  //   console.log('Back button visible:', backButton.isVisible); // Проверяем видимость кнопки
+  //   console.log('Back button info:', backButton);
 
-    // Обработчик нажатия кнопки "Назад"
-    backButton.on('click', () => {
-      console.log('Back button pressed');
-      window.history.back(); // Возврат на предыдущую страницу
-    });
-  } else {
-    console.error('Back button could not be initialized');
-  }
+  //   // Обработчик нажатия кнопки "Назад"
+  //   backButton.on('click', () => {
+  //     console.log('Back button pressed');
+  //     window.history.back(); // Возврат на предыдущую страницу
+  //   });
+  // } else {
+  //   console.error('Back button could not be initialized');
+  // }
 
   // Раскрытие приложения
   window.Telegram.WebApp.expand();
