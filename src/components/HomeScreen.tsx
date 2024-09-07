@@ -56,7 +56,7 @@ const HomeScreen: React.FC = () => {
           if (!user) throw new Error("Пользователь не найден");
           const newDialogId = await createChat(
             user.user_id,
-            "sales-text-generator"
+            chatType
           );
           navigate(`/chat/${newDialogId}`);
         } catch (err) {
