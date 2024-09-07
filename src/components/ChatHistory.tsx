@@ -29,7 +29,6 @@ import { useUser } from '../contexts/UserContext';
 import { initMainButton } from "@telegram-apps/sdk";
 import CloseIcon from '@mui/icons-material/Close';
 import moment from 'moment-timezone';
-import { useBackButton } from "../hooks/Chat/useBackButton";
 const [mainButton] = initMainButton(); 
 mainButton.hide();
 
