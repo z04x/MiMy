@@ -105,10 +105,10 @@ const HomeScreen: React.FC = () => {
           </Box>
           <Box sx={{maxWidth: '300px'}}>
             <Typography sx={{fontSize: '17px', fontWeight: '500', lineHeight: '22px', textAlign: 'left', color: '#fff'}}>
-              Simple chat
+              AI-чат: Базовый
             </Typography>
             <Typography sx={{fontSize: '17px', fontWeight: '400', lineHeight: '22px', textAlign: 'left', color: '#FFFFFFA3'}}>
-              I completed the final polish on the design and exported all.
+              Простой интерфейс, мощные возможности.
             </Typography>
           </Box>
         </Button>
@@ -140,11 +140,11 @@ const HomeScreen: React.FC = () => {
           </Box>
           <Box sx={{maxWidth: '300px'}}>
             <Typography sx={{display:'flex', justifyContent:'space-between', fontSize: '17px', fontWeight: '500', lineHeight: '22px', textAlign: 'left', color: '#fff'}}>
-              Sentiment Analysis
+              Анализатор
               <img src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/premium-icon.svg" alt="Premium" />
             </Typography>
             <Typography sx={{fontSize: '17px', fontWeight: '400', lineHeight: '22px', textAlign: 'left', color: '#FFFFFFA3'}}>
-              I completed the final polish on the design and exported all.
+              Узнайте, что в тексте помогает продажам, а что нет!
             </Typography>
           </Box>
         </Button>
