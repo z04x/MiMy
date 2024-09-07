@@ -29,10 +29,9 @@ import { useUser } from '../contexts/UserContext';
 import { initMainButton } from "@telegram-apps/sdk";
 import CloseIcon from '@mui/icons-material/Close';
 import moment from 'moment-timezone';
+import { useBackButton } from "../hooks/Chat/useBackButton";
 const [mainButton] = initMainButton(); 
 mainButton.hide();
-
-
 
 const formatDate = (dateString: string | null): string => {
   if (!dateString) return "Пустой чат";
@@ -61,6 +60,7 @@ const ChatHistory: React.FC = () => {
   const [openRenameDialog, setOpenRenameDialog] = useState(false);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [newTitle, setNewTitle] = useState("");
+  const {setIsVisible } = useBackButton();
   interface GroupedChats {
   [key: string]: Chat[];
 }
@@ -103,7 +103,14 @@ const ChatHistory: React.FC = () => {
     );
   }, []);
 
-useEffect(() => {
+  useEffect(() => {
+    setIsVisible(true);
+    return () => {
+      setIsVisible(false);
+    };
+  }, [setIsVisible]);
+
+  useEffect(() => {
     const fetchChatHistory = async () => {
       if (!user) return;
       

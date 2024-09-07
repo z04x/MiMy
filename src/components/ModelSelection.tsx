@@ -5,12 +5,14 @@ import { Box, Button, Typography, CircularProgress } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createChat, getAllModels, Model } from "../services/dialogService";
 import { useUser } from "../contexts/UserContext";
+import { useBackButton } from "../hooks/Chat/useBackButton";
 import BottomNavBar from "./BottomNavBar";
 
 const ModelSelection: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [models, setModels] = useState<Model[]>([]);
+  const {setIsVisible } = useBackButton();
   const navigate = useNavigate();
   const { user } = useUser();
   const location = useLocation();
@@ -37,6 +39,13 @@ const ModelSelection: React.FC = () => {
 
     fetchModels();
   }, [isSimpleChat]);
+
+  useEffect(() => {
+    setIsVisible(true);
+    return () => {
+      setIsVisible(false);
+    };
+  }, [setIsVisible]);
 
   const handleCreateChat = async (selectedModel: string) => {
     setLoading(true);
@@ -70,10 +79,10 @@ const ModelSelection: React.FC = () => {
     >
       <Box sx={{maxWidth:'328px'}}>
         <Typography sx={{fontSize:'28px', fontWeight:'600', lineHeight:'36px', textAlign:'center', color:'#fff', pb:'16px'}}>
-            Select of GPT model
+            Выбор ассистента
         </Typography>
         <Typography sx={{fontSize:'17px', fontWeight:'400', lineHeight:'22px', textAlign:'center', color:'#FFFFFFA3', pb:'32px'}}>
-          I completed the final polish on the design and exported all the necessary assets.
+            Вы почти на месте: выберите помощника для решения ваших задач.
         </Typography>
       </Box>
 
