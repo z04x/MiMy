@@ -88,10 +88,10 @@ const HomeScreen: React.FC = () => {
     >
       <Box sx={{maxWidth:'328px'}}>
         <Typography sx={{fontSize:'28px', fontWeight:'600', lineHeight:'36px', textAlign:'center', color:'#fff', pb:'16px'}}>
-          Select type of AI generation
+          ForgeAI
         </Typography>
         <Typography sx={{fontSize:'17px', fontWeight:'400', lineHeight:'22px', textAlign:'center', color:'#FFFFFFA3', pb:'32px'}}>
-          I completed the final polish on the design and exported all the necessary assets.
+         Ассистенты, которые превращают идеи в результаты.
         </Typography>
       </Box>
 
