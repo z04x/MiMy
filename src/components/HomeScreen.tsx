@@ -1,9 +1,5 @@
 // import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import BottomNavBar from "./BottomNavBar";
 // import { createChat } from "../services/dialogService";
@@ -13,8 +9,7 @@ import { createChat } from "../services/dialogService";
 import { useBackButton } from "../hooks/Chat/useBackButton";
 import { useEffect } from "react";
 
-const [mainButton] = initMainButton(); 
-
+const [mainButton] = initMainButton();
 
 const HomeScreen: React.FC = () => {
   // const [setOpen] = useState(false);
@@ -25,8 +20,7 @@ const HomeScreen: React.FC = () => {
   const { user } = useUser(); // Получаем пользователя из контекста
   const { setIsVisible } = useBackButton();
 
-  
-  mainButton.hide() //todo вывести кнопку в контекст, что бы скрывать там где она не нужна
+  mainButton.hide(); //todo вывести кнопку в контекст, что бы скрывать там где она не нужна
 
   // const handleCreateChat = async () => {
   //   setLoading(true);
@@ -44,33 +38,34 @@ const HomeScreen: React.FC = () => {
   //   }
   // };
 
-  useEffect( () => {
+  useEffect(() => {
     setIsVisible(false);
     return () => {
       setIsVisible(true);
-    }
-  })
+    };
+  });
 
   const handleButtonClick = async (chatType: string) => {
-    if (chatType === 'simple-chat') {
-      navigate('/model-selection', { state: { simpleChat: true } }); // Передаем флаг simpleChat
-    } else if (chatType === 'sales-generator') { // пока что готова одна модель
-      const isPremium = user?.subscription.subscription_type === 'premium';
+    if (chatType === "simple-chat") {
+      navigate("/model-selection", { state: { simpleChat: true } }); // Передаем флаг simpleChat
+    } else {
+      // пока что готова одна модель
+      const isPremium = user?.subscription.subscription_type === "premium";
       if (isPremium) {
         try {
           if (!user) throw new Error("Пользователь не найден");
-          const newDialogId = await createChat(user.user_id, "sales-text-generator");
+          const newDialogId = await createChat(
+            user.user_id,
+            "sales-text-generator"
+          );
           navigate(`/chat/${newDialogId}`);
         } catch (err) {
           console.error("Ошибка при создании чата:", err);
           // Здесь можно добавить обработку ошибки, например, показать уведомление пользователю
         }
       } else {
-        navigate('/upgrade');
+        navigate("/upgrade");
       }
-    } else {
-      // Обработка других типов чатов
-      navigate('/upgrade');
     }
   };
 
@@ -79,71 +74,177 @@ const HomeScreen: React.FC = () => {
   return (
     <Box
       sx={{
-        padding:'74px 0px',
+        padding: "74px 0px",
         display: "flex",
         flexDirection: "column",
-        height: '100vh',
-        alignItems:'center',
+        height: "100vh",
+        alignItems: "center",
       }}
     >
-      <Box sx={{maxWidth:'328px'}}>
-        <Typography sx={{fontSize:'28px', fontWeight:'600', lineHeight:'36px', textAlign:'center', color:'#fff', pb:'16px'}}>
+      <Box sx={{ maxWidth: "328px" }}>
+        <Typography
+          sx={{
+            fontSize: "28px",
+            fontWeight: "600",
+            lineHeight: "36px",
+            textAlign: "center",
+            color: "#fff",
+            pb: "16px",
+          }}
+        >
           ForgeAI
         </Typography>
-        <Typography sx={{fontSize:'17px', fontWeight:'400', lineHeight:'22px', textAlign:'center', color:'#FFFFFFA3', pb:'32px'}}>
-         Ассистенты, которые превращают идеи в результаты.
+        <Typography
+          sx={{
+            fontSize: "17px",
+            fontWeight: "400",
+            lineHeight: "22px",
+            textAlign: "center",
+            color: "#FFFFFFA3",
+            pb: "32px",
+          }}
+        >
+          Ассистенты, которые превращают идеи в результаты.
         </Typography>
       </Box>
 
-      <Box sx={{display:'flex', flexDirection:'column'}}>
-        <Button 
-          variant="text"
-          onClick={() => handleButtonClick('simple-chat')} 
-        >
-          <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '89px', height: '100%'}}>
-            <img src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/simple-chat-logo.png" alt="Robot" />
+      <Box sx={{ display: "flex", flexDirection: "column" }}>
+        <Button variant="text" onClick={() => handleButtonClick("simple-chat")}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "89px",
+              height: "100%",
+            }}
+          >
+            <img
+              src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/simple-chat-logo.png"
+              alt="Robot"
+            />
           </Box>
-          <Box sx={{maxWidth: '300px'}}>
-            <Typography sx={{fontSize: '17px', fontWeight: '500', lineHeight: '22px', textAlign: 'left', color: '#fff'}}>
+          <Box sx={{ maxWidth: "300px" }}>
+            <Typography
+              sx={{
+                fontSize: "17px",
+                fontWeight: "500",
+                lineHeight: "22px",
+                textAlign: "left",
+                color: "#fff",
+              }}
+            >
               AI-чат: Базовый
             </Typography>
-            <Typography sx={{fontSize: '17px', fontWeight: '400', lineHeight: '22px', textAlign: 'left', color: '#FFFFFFA3'}}>
+            <Typography
+              sx={{
+                fontSize: "17px",
+                fontWeight: "400",
+                lineHeight: "22px",
+                textAlign: "left",
+                color: "#FFFFFFA3",
+              }}
+            >
               Простой интерфейс, мощные возможности.
             </Typography>
           </Box>
         </Button>
 
-        <Button 
+        <Button
           variant="text"
-          onClick={() => handleButtonClick('sales-generator')}
+          onClick={() => handleButtonClick("sales-generator")}
         >
-          <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '89px', height: '100%'}}>
-            <img src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/sales-generator.png" alt="Robot" />
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "89px",
+              height: "100%",
+            }}
+          >
+            <img
+              src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/sales-generator.png"
+              alt="Robot"
+            />
           </Box>
-          <Box sx={{maxWidth: '300px'}}>
-            <Typography sx={{display:'flex', justifyContent:'space-between',fontSize: '17px', fontWeight: '500', lineHeight: '22px', textAlign: 'left', color: '#fff'}}>
+          <Box sx={{ maxWidth: "300px" }}>
+            <Typography
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                fontSize: "17px",
+                fontWeight: "500",
+                lineHeight: "22px",
+                textAlign: "left",
+                color: "#fff",
+              }}
+            >
               КонтентМашина
-              <img src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/premium-icon.svg" alt="Premium" />
+              <img
+                src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/premium-icon.svg"
+                alt="Premium"
+              />
             </Typography>
-            <Typography sx={{fontSize: '17px', fontWeight: '400', lineHeight: '22px', textAlign: 'left', color: '#FFFFFFA3',}}>
+            <Typography
+              sx={{
+                fontSize: "17px",
+                fontWeight: "400",
+                lineHeight: "22px",
+                textAlign: "left",
+                color: "#FFFFFFA3",
+              }}
+            >
               Опишите продукт — мы сделаем его продающим!
             </Typography>
           </Box>
         </Button>
 
-        <Button 
+        <Button
           variant="text"
-          onClick={() => handleButtonClick('sentiment-analysis')}
+          onClick={() => handleButtonClick("text-analyzer")}
         >
-          <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', width: '89px', height: '100%'}}>
-            <img src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/sentiment-analyzator.png" alt="Robot" />
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "89px",
+              height: "100%",
+            }}
+          >
+            <img
+              src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/sentiment-analyzator.png"
+              alt="Robot"
+            />
           </Box>
-          <Box sx={{maxWidth: '300px'}}>
-            <Typography sx={{display:'flex', justifyContent:'space-between', fontSize: '17px', fontWeight: '500', lineHeight: '22px', textAlign: 'left', color: '#fff'}}>
+          <Box sx={{ maxWidth: "300px" }}>
+            <Typography
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                fontSize: "17px",
+                fontWeight: "500",
+                lineHeight: "22px",
+                textAlign: "left",
+                color: "#fff",
+              }}
+            >
               Анализатор
-              <img src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/premium-icon.svg" alt="Premium" />
+              <img
+                src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/premium-icon.svg"
+                alt="Premium"
+              />
             </Typography>
-            <Typography sx={{fontSize: '17px', fontWeight: '400', lineHeight: '22px', textAlign: 'left', color: '#FFFFFFA3'}}>
+            <Typography
+              sx={{
+                fontSize: "17px",
+                fontWeight: "400",
+                lineHeight: "22px",
+                textAlign: "left",
+                color: "#FFFFFFA3",
+              }}
+            >
               Узнайте, что в тексте помогает продажам, а что нет!
             </Typography>
           </Box>
