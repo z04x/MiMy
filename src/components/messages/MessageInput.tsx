@@ -1,6 +1,6 @@
-import React, { forwardRef } from "react";
 import { Box, TextField } from "@mui/material";
-import useResizeObserver from "../hooks/MessageInput/useResizeObserver";
+import { forwardRef } from "react";
+import useResizeObserver from "../../hooks/MessageInput/useResizeObserver";
 interface MessageInputProps {
   isLoading: boolean;
   onHeightChange: (height: number) => void;

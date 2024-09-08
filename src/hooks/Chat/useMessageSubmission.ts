@@ -1,65 +1,78 @@
-import { useCallback } from 'react';
-import { Message } from '../../interfaces/Message';
-import { getStreamResponse } from '../../services/dialogService';
-import { handleMessageSubmission } from '../../utils/messageUtils';
-import User from '../../interfaces/User';
+import { useCallback } from "react";
+import { Message } from "../../interfaces/Message";
+import { getStreamResponse } from "../../services/dialogService";
+import { createChat } from "../../services/dialogService";
+import User from "../../interfaces/User";
 
-export const useMessageSubmission = (chatId: string, user: User | null, setMessages: React.Dispatch<React.SetStateAction<Message[]>>, isLoading: boolean) => {
-
+export const useMessageSubmission = (
+  chatId: string,
+  isNewChat: boolean,
+  user: User | null,
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>,
+  isLoading: boolean
+) => {
   // Обработка ошибок
-    const handleError = useCallback((errorMessage: string) => {
-    console.error(errorMessage);
-    setMessages(prevMessages => {
+  const handleError = useCallback(
+    (errorMessage: string) => {
+      console.error(errorMessage);
+      setMessages((prevMessages) => {
         const updatedMessages = prevMessages.slice(0, -1); // Удаление последнего сообщения
         const errorMsg: Message = {
-        text: `Error: ${errorMessage}`,
-        isUser: false,
+          text: `Error: ${errorMessage}`,
+          isUser: false,
         };
         return [...updatedMessages, errorMsg];
-    });
-    }, [setMessages]);
+      });
+    },
+    [setMessages]
+  );
 
   // Отправка сообщения
-    const handleSubmit = useCallback(async (prompt: string) => {
-    if (!prompt.trim() || isLoading) return;
+  const handleSubmit = useCallback(
+    async (prompt: string, model: string) => {
+      if (!prompt.trim() || isLoading) return;
 
-    const userMessage: Message = { text: prompt, isUser: true };
-    const loadingMessage: Message = { text: "", isUser: false, isLoading: true };
+      const userMessage: Message = { text: prompt, isUser: true };
+      const loadingMessage: Message = {
+        text: "",
+        isUser: false,
+        isLoading: true,
+      };
 
-    setMessages(prevMessages => [...prevMessages, userMessage, loadingMessage]);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        userMessage,
+        loadingMessage,
+      ]);
 
-    if (user) {
+      console.log("isNewChat", isNewChat);
+
+      if (user) {
         try {
-            const numericChatId = Number(chatId);
-            if (!isNaN(numericChatId)) {
-                const dialogId = await handleMessageSubmission(user.user_id, prompt, numericChatId, setMessages);
+          if (isNewChat) {
+            await createChat(user.user_id, model, chatId);
+          }
+          const assistantResponse: Message = {
+            text: null,
+            isUser: false,
+            isLoading: true,
+            readPromptResponse: getStreamResponse(user.user_id, chatId, prompt),
+          };
 
-            if (dialogId !== null) {
-                const assistantResponse: Message = {
-                    text: null,
-                    isUser: false,
-                    isLoading: true,
-                    readPromptResponse: getStreamResponse(user.user_id, dialogId, prompt,),
-                };
-
-            setMessages(prevMessages => {
-                const updatedMessages = [...prevMessages];
-                updatedMessages.pop();  // Удаление сообщения о загрузке
-                return [...updatedMessages, assistantResponse];
-            });
-                } else {
-                    handleError("Failed to get dialogId");
-            }
-        } else {
-            handleError("Invalid chatId: it is not a number");
+          setMessages((prevMessages) => {
+            const updatedMessages = [...prevMessages];
+            updatedMessages.pop(); // Удаление сообщения о загрузке
+            return [...updatedMessages, assistantResponse];
+          });
+        } catch (error) {
+          handleError("An error occurred. Please try again later.");
         }
-    } catch (error) {
-        handleError("An error occurred. Please try again later.");
-        }
-    } else {
+      } else {
         handleError("No user data available");
-    }
-    }, [user, chatId, setMessages, isLoading, handleError]);
+      }
+    },
+    [user, chatId, setMessages, isLoading, handleError, isNewChat]
+  );
 
-return { handleSubmit };
+  return { handleSubmit };
 };

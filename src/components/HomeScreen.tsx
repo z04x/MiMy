@@ -1,13 +1,18 @@
 // import React, { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import BottomNavBar from "./BottomNavBar";
 // import { createChat } from "../services/dialogService";
 import { useUser } from "../contexts/UserContext";
 import { initMainButton } from "@telegram-apps/sdk";
-import { createChat } from "../services/dialogService";
 import { useBackButton } from "../hooks/Chat/useBackButton";
+import { ModelDetails } from "../interfaces/ModelDetails";
+import { getModels } from "../services/modelService";
 import { useEffect } from "react";
+import ModelComponent from "./models/Model";
+import HomeScreenHeader from "./HomeScreenHeader";
+import { v4 as uuidv4 } from "uuid";
 
 const [mainButton] = initMainButton();
 
@@ -19,6 +24,7 @@ const HomeScreen: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useUser(); // Получаем пользователя из контекста
   const { setIsVisible } = useBackButton();
+  const [modelDetails, setModelDetails] = useState<ModelDetails[]>([]);
 
   mainButton.hide(); //todo вывести кнопку в контекст, что бы скрывать там где она не нужна
 
@@ -45,6 +51,12 @@ const HomeScreen: React.FC = () => {
     };
   });
 
+  useEffect(() => {
+    getModels(true).then((models) => {
+      setModelDetails(models);
+    });
+  }, []);
+
   const handleButtonClick = async (chatType: string) => {
     if (chatType === "simple-chat") {
       navigate("/model-selection", { state: { simpleChat: true } }); // Передаем флаг simpleChat
@@ -54,11 +66,8 @@ const HomeScreen: React.FC = () => {
       if (isPremium) {
         try {
           if (!user) throw new Error("Пользователь не найден");
-          const newDialogId = await createChat(
-            user.user_id,
-            chatType
-          );
-          navigate(`/chat/${newDialogId}`);
+          const newDialogId = uuidv4();
+          navigate(`/chat/${newDialogId}?model=${chatType}`);
         } catch (err) {
           console.error("Ошибка при создании чата:", err);
           // Здесь можно добавить обработку ошибки, например, показать уведомление пользователю
@@ -81,174 +90,14 @@ const HomeScreen: React.FC = () => {
         alignItems: "center",
       }}
     >
-      <Box sx={{ maxWidth: "328px" }}>
-        <Typography
-          sx={{
-            fontSize: "28px",
-            fontWeight: "600",
-            lineHeight: "36px",
-            textAlign: "center",
-            color: "#fff",
-            pb: "16px",
-          }}
-        >
-          ForgeAI
-        </Typography>
-        <Typography
-          sx={{
-            fontSize: "17px",
-            fontWeight: "400",
-            lineHeight: "22px",
-            textAlign: "center",
-            color: "#FFFFFFA3",
-            pb: "32px",
-          }}
-        >
-          Ассистенты, которые превращают идеи в результаты.
-        </Typography>
-      </Box>
-
+      <HomeScreenHeader />
       <Box sx={{ display: "flex", flexDirection: "column" }}>
-        <Button variant="text" onClick={() => handleButtonClick("simple-chat")}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "89px",
-              height: "100%",
-            }}
-          >
-            <img
-              src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/simple-chat-logo.png"
-              alt="Robot"
-            />
-          </Box>
-          <Box sx={{ maxWidth: "300px" }}>
-            <Typography
-              sx={{
-                fontSize: "17px",
-                fontWeight: "500",
-                lineHeight: "22px",
-                textAlign: "left",
-                color: "#fff",
-              }}
-            >
-              AI-чат: Базовый
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: "17px",
-                fontWeight: "400",
-                lineHeight: "22px",
-                textAlign: "left",
-                color: "#FFFFFFA3",
-              }}
-            >
-              Простой интерфейс, мощные возможности.
-            </Typography>
-          </Box>
-        </Button>
-
-        <Button
-          variant="text"
-          onClick={() => handleButtonClick("sales-text-generator")}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "89px",
-              height: "100%",
-            }}
-          >
-            <img
-              src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/sales-generator.png"
-              alt="Robot"
-            />
-          </Box>
-          <Box sx={{ maxWidth: "300px" }}>
-            <Typography
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: "17px",
-                fontWeight: "500",
-                lineHeight: "22px",
-                textAlign: "left",
-                color: "#fff",
-              }}
-            >
-              КонтентМашина
-              <img
-                src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/premium-icon.svg"
-                alt="Premium"
-              />
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: "17px",
-                fontWeight: "400",
-                lineHeight: "22px",
-                textAlign: "left",
-                color: "#FFFFFFA3",
-              }}
-            >
-              Опишите продукт — мы сделаем его продающим!
-            </Typography>
-          </Box>
-        </Button>
-
-        <Button
-          variant="text"
-          onClick={() => handleButtonClick("text-analyzer")}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "89px",
-              height: "100%",
-            }}
-          >
-            <img
-              src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/sentiment-analyzator.png"
-              alt="Robot"
-            />
-          </Box>
-          <Box sx={{ maxWidth: "300px" }}>
-            <Typography
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: "17px",
-                fontWeight: "500",
-                lineHeight: "22px",
-                textAlign: "left",
-                color: "#fff",
-              }}
-            >
-              Анализатор
-              <img
-                src="https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/premium-icon.svg"
-                alt="Premium"
-              />
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: "17px",
-                fontWeight: "400",
-                lineHeight: "22px",
-                textAlign: "left",
-                color: "#FFFFFFA3",
-              }}
-            >
-              Узнайте, что в тексте помогает продажам, а что нет!
-            </Typography>
-          </Box>
-        </Button>
+        {modelDetails.map((model) => (
+          <ModelComponent
+            handleButtonClick={handleButtonClick}
+            modelDetails={model}
+          />
+        ))}
       </Box>
       <BottomNavBar current="/" />
     </Box>

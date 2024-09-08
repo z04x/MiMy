@@ -1,17 +1,17 @@
 // src/App.tsx
 
-import React, { useEffect } from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { Container, CssBaseline } from '@mui/material';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import theme from './styles/theme';
-import Chat from './components/Chat';
-import ChatHistory from './components/ChatHistory';
+import { ThemeProvider } from '@mui/material/styles';
+import React, { useEffect } from 'react';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import Chat from './components/chat/Chat';
+import ChatHistory from './components/chat/ChatHistory';
 import HomeScreen from './components/HomeScreen';
-import UpgradePage from './components/UpgradePage';
 import ModelSelection from './components/ModelSelection';
-import { initTelegram } from './telegramUtils';
+import UpgradePage from './components/UpgradePage';
 import { UserProvider } from './contexts/UserContext'; // Импортируем UserProvider
+import theme from './styles/theme';
+import { initTelegram } from './telegramUtils';
 
 const App: React.FC = () => {
   useEffect(() => {

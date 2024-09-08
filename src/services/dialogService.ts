@@ -1,36 +1,48 @@
 import api, { BASE_URL } from "./api";
 import Chat from "../interfaces/Chat";
 import axios from "axios";
-export const getMessagesFromDialog = async (userId: number, dialogId: number) => {
+
+export const getMessagesFromDialog = async (
+  userId: number,
+  dialogId: string
+) => {
   try {
     const response = await api.get(
       `/users/${userId}/dialogs/${dialogId}/messages`
     );
-    console.log(response.data);
     return {
       messages: response.data.messages.map((message: any) => ({
         text: message.content,
         isUser: message.role === "user",
         isLoading: false,
       })),
-      model: response.data.dialog.model // Теперь получаем model из dialog
+      model: response.data.dialog.model, // Теперь получаем model из dialog
     };
   } catch (error) {
-    console.error("Ошибка при получении сообщений из диалога:", error);
+    // console.error("Ошибка при получении сообщений из диалога:", error);
     throw error;
   }
 };
 
-export const getStreamResponse = async (userId: number, dialogId: number, prompt: string): Promise<ReadableStreamDefaultReader<string>> => {
-  const response = await fetch(`${BASE_URL}/users/${userId}/dialogs/${dialogId}/messages`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ prompt }),
-  });
+export const getStreamResponse = async (
+  userId: number,
+  dialogId: string,
+  prompt: string
+): Promise<ReadableStreamDefaultReader<string>> => {
+  const response = await fetch(
+    `${BASE_URL}/users/${userId}/dialogs/${dialogId}/messages`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt }),
+    }
+  );
 
-  const reader = response.body!.pipeThrough(new TextDecoderStream()).getReader();
+  const reader = response
+    .body!.pipeThrough(new TextDecoderStream())
+    .getReader();
   return reader as ReadableStreamDefaultReader<string>;
 };
 
@@ -44,10 +56,16 @@ export const getChatHistory = async (userId: number): Promise<Chat[]> => {
   }
 };
 
-export const deleteChat = async (userId: number, dialog_id: number): Promise<boolean> => {
+export const deleteChat = async (
+  userId: number,
+  dialog_id: number
+): Promise<boolean> => {
   try {
     const response = await api.delete(`/users/${userId}/dialogs/${dialog_id}`);
-    console.log("Полный ответ сервера при удалении:", JSON.stringify(response, null, 2));
+    console.log(
+      "Полный ответ сервера при удалении:",
+      JSON.stringify(response, null, 2)
+    );
     if (response.status === 200 && response.data && response.data.success) {
       return true;
     } else {
@@ -60,10 +78,15 @@ export const deleteChat = async (userId: number, dialog_id: number): Promise<boo
   }
 };
 
-export const createChat = async (userId: number, model: string) => {
+export const createChat = async (
+  userId: number,
+  model: string,
+  dialogId: string
+) => {
   try {
     const response = await api.post(`/users/${userId}/dialogs`, {
       model: model,
+      dialog_id: dialogId,
     });
     return response.data.dialog_id;
   } catch (error) {
@@ -82,35 +105,45 @@ export const getChatsByUserId = async (userId: number): Promise<Chat[]> => {
   }
 };
 
-export const renameChat = async (userId: number, dialogId: number, newTitle: string): Promise<Chat> => {
+export const renameChat = async (
+  userId: number,
+  dialogId: number,
+  newTitle: string
+): Promise<Chat> => {
   try {
-    const response = await api.patch<Chat>(`/users/${userId}/dialogs/${dialogId}`, {
-      title: newTitle
-    });
+    const response = await api.patch<Chat>(
+      `/users/${userId}/dialogs/${dialogId}`,
+      {
+        title: newTitle,
+      }
+    );
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error('Ошибка при переименовании чата:', error.message);
-      console.error('Статус ошибки:', error.response?.status);
-      console.error('Данные ошибки:', error.response?.data);
-      console.error('Конфигурация запроса:', error.config);
+      console.error("Ошибка при переименовании чата:", error.message);
+      console.error("Статус ошибки:", error.response?.status);
+      console.error("Данные ошибки:", error.response?.data);
+      console.error("Конфигурация запроса:", error.config);
     } else {
-      console.error('Неизвестная ошибка при переименовании чата:', error);
+      console.error("Неизвестная ошибка при переименовании чата:", error);
     }
     throw error;
   }
 };
 
-export const getChatInfo = async (userId: number, dialogId: number): Promise<Chat> => {
+export const getChatInfo = async (
+  userId: number,
+  dialogId: number
+): Promise<Chat> => {
   const response = await fetch(`/chats/${userId}/${dialogId}`, {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 
   if (!response.ok) {
-    throw new Error('Failed to fetch chat info');
+    throw new Error("Failed to fetch chat info");
   }
 
   return response.json();
@@ -132,7 +165,7 @@ interface ModelDetails extends Model {
 
 export const getAllModels = async (): Promise<Model[]> => {
   try {
-    const response = await api.get<Model[]>('/models');
+    const response = await api.get<Model[]>("/models");
     return response.data;
   } catch (error) {
     console.error("Ошибка при получении списка моделей:", error);
@@ -140,9 +173,8 @@ export const getAllModels = async (): Promise<Model[]> => {
   }
 };
 
-export const getModelById = async (userId: number, dialogId: number): Promise<ModelDetails> => {
+export const getModelById = async (model: string): Promise<ModelDetails> => {
   try {
-    const { model } = await getMessagesFromDialog(userId, dialogId);
     const response = await api.get<ModelDetails>(`/models/${model}`);
     console.log("Ответ API для модели:", response.data);
     return response.data;

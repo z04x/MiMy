@@ -20,12 +20,12 @@ export const fetchUserData = async (): Promise<User> => {
   }
 };
 
-export const loadMessages = async (userId: number, dialogId: number): Promise<Message[]> => {
+export const loadMessages = async (userId: number, dialogId: string): Promise<{ messages: Message[], model: string }> => {
   try {
-    const { messages } = await getMessagesFromDialog(userId, dialogId);
-    return messages;
+    const { messages, model } = await getMessagesFromDialog(userId, dialogId);
+    return { messages, model };
   } catch (error) {
-    console.error("Ошибка при получении сообщений:", error);
+    // console.error("Ошибка при получении сообщений:", error);
     throw error;
   }
 };

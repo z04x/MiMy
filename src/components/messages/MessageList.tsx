@@ -1,8 +1,8 @@
+import { Avatar, Box, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Typography, Avatar } from "@mui/material";
-import { Message } from "../interfaces/Message";
+import { Message } from "../../interfaces/Message";
+import { ModelDetails } from "../../interfaces/ModelDetails";
 import MessageComponent from "./Message";
-import { ModelDetails } from "../interfaces/ModelDetails";
 
 interface MessageListProps {
   messages: Message[];

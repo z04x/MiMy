@@ -1,10 +1,10 @@
-import React, { memo, useState, useCallback, useEffect } from "react";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Box, CircularProgress, IconButton, Typography } from "@mui/material";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { Message } from "../interfaces/Message";
+import { Message } from "../../interfaces/Message";
 
 interface MessageProps {
   message: Message;
