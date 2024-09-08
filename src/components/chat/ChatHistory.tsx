@@ -188,6 +188,25 @@ const ChatHistory: React.FC = () => {
             />
           </Avatar>
         );
+        case "text-analyzer":
+        return (
+          <Avatar
+            sx={{
+              ...avatarStyle,
+              padding: 0, // Убираем внутренний отступ
+            }}
+          >
+            <Box
+              component="img"
+              src={"https://chat-agregator.s3.eu-central-1.amazonaws.com/svg-logos/sentiment-analyzator.png"}
+              sx={{
+                width: "130%", // Делаем изображение на 30% больше
+                height: "130%",
+                objectFit: "contain", // Сохраняем пропорции
+              }}
+            />
+          </Avatar>
+        );
       default:
         return <Avatar sx={{ bgcolor: "green", mr: 2 }}>?</Avatar>;
     }
@@ -258,7 +277,7 @@ const ChatHistory: React.FC = () => {
       <Typography
         variant="h4"
         component="div"
-        sx={{ mb: 3, pb: "16px", color: "#fff" }}
+        sx={{ mb: 0, pb: "0", color: "#fff", mt: 3 }}
       >
         История чатов
       </Typography>
