@@ -9,6 +9,7 @@ interface MessageListProps {
   endOfMessagesRef: React.RefObject<HTMLDivElement>;
   setLoading: (isLoading: boolean) => void;
   modelDetails: ModelDetails | null;
+  onPaymentRequired: () => void;  // Добавляем новый проп
 }
 
 const MessageList: React.FC<MessageListProps> = ({
@@ -16,6 +17,7 @@ const MessageList: React.FC<MessageListProps> = ({
   endOfMessagesRef,
   setLoading,
   modelDetails,
+  onPaymentRequired
 }) => {
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -116,6 +118,7 @@ const MessageList: React.FC<MessageListProps> = ({
               message={message}
               index={index}
               setLoading={setLoading}
+              onPaymentRequired={onPaymentRequired}  // Передаем функцию в MessageComponent
             />
           ))}
           {/* Reference to scroll into view can be useful for new messages */}

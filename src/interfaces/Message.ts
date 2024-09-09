@@ -4,5 +4,5 @@ export interface Message {
   text: string | null;
   isUser: boolean;
   isLoading?: boolean;
-  readPromptResponse?: Promise<ReadableStreamDefaultReader<string>>;
+  readPromptResponse?: Promise<ReadableStreamDefaultReader<string> | { error: string }>;
 }

@@ -33,10 +33,11 @@ interface MessageProps {
   message: Message;
   index: number;
   setLoading: (isLoading: boolean) => void;
+  onPaymentRequired: () => void;
 }
 
 const MessageComponent: React.FC<MessageProps> = memo(
-  ({ message, index, setLoading }) => {
+  ({ message, index, setLoading, onPaymentRequired }) => {
     const [body, setBody] = useState("");
     const [copyStatus, setCopyStatus] = useState("");
     const [codeCopyStatus, setCodeCopyStatus] = useState("");
@@ -48,18 +49,29 @@ const MessageComponent: React.FC<MessageProps> = memo(
       } else if (message.readPromptResponse) {
         let result = "";
         setLoading(true);
-        message.readPromptResponse.then(async (reader) => {
-          while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            result += value;
-            setBody(result);
+        message.readPromptResponse.then(async (response) => {
+          if ('error' in response) {
+            // Обработка ошибки
+            setBody(response.error);
+            setLoading(false);
+            if (response.error.includes("Для продолжения использования сервиса требуется оплата")) {
+              onPaymentRequired();  // Вызываем функцию при ошибке 402
+            }
+          } else {
+            // Обработка успешного ответа
+            const reader = response;
+            while (true) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              result += value;
+              setBody(result);
+            }
           }
           setLoading(false);
         });
         message.isLoading = false;
       }
-    }, [message, setLoading]);
+    }, [message, setLoading, onPaymentRequired]);
 
     const copyToClipboard = useCallback(
       async (

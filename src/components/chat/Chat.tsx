@@ -15,7 +15,7 @@ import { ModelDetails } from "../../interfaces/ModelDetails";
 import { getModelById } from "../../services/dialogService";
 import MessageInput from "../messages/MessageInput";
 import MessageList from "../messages/MessageList";
-
+import { useNavigate } from "react-router-dom";
 const CHAT_STYLES = {
   container: { height: "100%", maxHeight: "100%", overflow: "hidden" },
   innerContainer: { display: "flex", flexDirection: "column", width: "100%" },
@@ -53,13 +53,21 @@ const Chat: React.FC = () => {
   );
   const [modelDetails, setModelDetails] = useState<ModelDetails | null>(null);
 
-  const { setClickHandler, setEnabled } = useMainButton();
+  const navigate = useNavigate();
+  const [isUpgradeRequired, setIsUpgradeRequired] = useState(false);
+
+  const { setClickHandler, setEnabled, setText } = useMainButton();
 
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value);
   }, []);
 
   const handleMainButtonClick = useCallback(async () => {
+    if (isUpgradeRequired) {
+      navigate('/upgrade');
+      return;
+    }
+
     if (inputValue.trim()) {
       try {
         await handleSubmit(
@@ -71,11 +79,21 @@ const Chat: React.FC = () => {
         console.error("Ошибка при отправке сообщения:", error);
       }
     }
-  }, [inputValue, handleSubmit, searchParams]);
+  }, [inputValue, handleSubmit, searchParams, isUpgradeRequired, navigate]);
 
   useEffect(() => {
     setClickHandler(handleMainButtonClick);
   }, [setClickHandler, handleMainButtonClick]);
+
+  useEffect(() => {
+    if (isUpgradeRequired) {
+      setText("Обновить план");
+      setEnabled(true);
+    } else {
+      setText("Отправить  ➤");
+      setEnabled(!!inputValue.trim());
+    }
+  }, [inputValue, setEnabled, setText, isUpgradeRequired]);
 
   useEffect(() => {
     if (user && chatId) {
@@ -96,10 +114,6 @@ const Chat: React.FC = () => {
   }, [user, chatId, searchParams]);
 
   useEffect(() => {
-    setEnabled(!!inputValue.trim());
-  }, [inputValue, setEnabled]);
-
-  useEffect(() => {
     if (messages.length > 0) {
       const timer = setTimeout(() => {
         endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -108,6 +122,10 @@ const Chat: React.FC = () => {
     }
   }, [messages]);
 
+  const handlePaymentRequired = useCallback(() => {
+    setIsUpgradeRequired(true);
+  }, []);
+
   const memoizedMessageList = useMemo(
     () => (
       <MessageList
@@ -115,9 +133,10 @@ const Chat: React.FC = () => {
         endOfMessagesRef={endOfMessagesRef}
         setLoading={setLoading}
         modelDetails={modelDetails}
+        onPaymentRequired={handlePaymentRequired}
       />
     ),
-    [messages, endOfMessagesRef, setLoading, modelDetails]
+    [messages, endOfMessagesRef, setLoading, modelDetails, handlePaymentRequired]
   );
 
   const memoizedMessageInput = useMemo(

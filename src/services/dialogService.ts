@@ -28,22 +28,35 @@ export const getStreamResponse = async (
   userId: number,
   dialogId: string,
   prompt: string
-): Promise<ReadableStreamDefaultReader<string>> => {
-  const response = await fetch(
-    `${BASE_URL}/users/${userId}/dialogs/${dialogId}/messages`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ prompt }),
-    }
-  );
+): Promise<ReadableStreamDefaultReader<string> | { error: string }> => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/users/${userId}/dialogs/${dialogId}/messages`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      }
+    );
 
-  const reader = response
-    .body!.pipeThrough(new TextDecoderStream())
-    .getReader();
-  return reader as ReadableStreamDefaultReader<string>;
+    if (response.status === 402) {
+      return Promise.resolve({ error: "Для продолжения использования сервиса требуется оплата. Пожалуйста, обновите ваш план." });
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const reader = response
+      .body!.pipeThrough(new TextDecoderStream())
+      .getReader();
+    return Promise.resolve(reader as ReadableStreamDefaultReader<string>);
+  } catch (error) {
+    console.error("Ошибка при получении потокового ответа:", error);
+    throw error;
+  }
 };
 
 export const getChatHistory = async (userId: number): Promise<Chat[]> => {

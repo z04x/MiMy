@@ -35,5 +35,9 @@ export const useMainButton = () => {
     mainButton.setParams({ isEnabled });
   }, []);
 
-  return { setClickHandler, setEnabled };
+  const setText = useCallback((text: string) => {
+    mainButton.setParams({ text });
+  }, []);
+
+  return { setClickHandler, setEnabled, setText };
 };

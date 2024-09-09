@@ -52,23 +52,37 @@ export const useMessageSubmission = (
           if (isNewChat) {
             await createChat(user.user_id, model, chatId);
           }
+          const responsePromise = getStreamResponse(user.user_id, chatId, prompt);
+          
           const assistantResponse: Message = {
             text: null,
             isUser: false,
             isLoading: true,
-            readPromptResponse: getStreamResponse(user.user_id, chatId, prompt),
+            readPromptResponse: responsePromise,
           };
-
+          
           setMessages((prevMessages) => {
             const updatedMessages = [...prevMessages];
             updatedMessages.pop(); // Удаление сообщения о загрузке
             return [...updatedMessages, assistantResponse];
           });
+
+          const response = await responsePromise;
+          
+          if ('error' in response) {
+            // Это случай ошибки 402
+            setMessages((prevMessages) => {
+              const updatedMessages = prevMessages.map(msg => 
+                msg === assistantResponse ? { ...msg, text: response.error, isLoading: false } : msg
+              );
+              return updatedMessages;
+            });
+          }
         } catch (error) {
-          handleError("An error occurred. Please try again later.");
+          handleError("Произошла ошибка. Пожалуйста, попробуйте еще раз позже.");
         }
       } else {
-        handleError("No user data available");
+        handleError("Данные пользователя недоступны");
       }
     },
     [user, chatId, setMessages, isLoading, handleError, isNewChat]
